@@ -1,6 +1,5 @@
 import time 
 
-
 def hello_message(user) -> str:
     temp = int(time.strftime("%H"))
     hello =  {
