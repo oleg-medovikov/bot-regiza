@@ -55,17 +55,20 @@ class Organization(BaseModel):
 
             # если строки нет, то добавляем
             if res is None:
-                string += f"добавил {row['org_name']}\n"
                 row['date_update'] = datetime.now()
                 row.pop('org_id')
                 query = t_dict_orgs.insert().values(**row)
-                await database.execute(query)
+                try:
+                    await database.execute(query)
+                except DataError:
+                    string += f"ошибка в {row['org_name']}\n"
+                else:
+                    string += f"добавил {row['org_name']}\n"
                 continue
 
             # если строчка есть ищем несовпадение значений, чтобы заменить
             for key, value in dict(res).items():
                 if row[key] != value and key != 'date_update':
-                    string += f"обновил {row['org_name']}\n"
                     row['date_update'] = datetime.now()
                     query = t_dict_orgs.update()\
                         .where(
@@ -75,6 +78,8 @@ class Organization(BaseModel):
                         await database.execute(query)
                     except DataError:
                         string += f"ошибка в {row['org_name']}\n"
+                    else:
+                        string += f"обновил {row['org_name']}\n"
 
                     break
         if string == '':

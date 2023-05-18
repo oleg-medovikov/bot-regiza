@@ -93,17 +93,20 @@ class User (BaseModel):
 
             # если строки нет, то добавляем
             if res is None:
-                string += f"добавил {row['fio']}\n"
                 row['date_update'] = datetime.now()
                 row.pop('u_id')
                 query = t_users.insert().values(**row)
-                await database.execute(query)
+                try:
+                    await database.execute(query)
+                except DataError:
+                    string += f"ошибка с {row['fio']}\n"
+                else:
+                    string += f"добавил {row['fio']}\n"
                 continue
 
             # если строчка есть ищем несовпадение значений, чтобы заменить
             for key, value in dict(res).items():
                 if row[key] != value and key != 'date_update':
-                    string += f"обновил {row['fio']}\n"
                     row['date_update'] = datetime.now()
                     query = t_users.update()\
                         .where(
@@ -113,6 +116,8 @@ class User (BaseModel):
                         await database.execute(query)
                     except DataError:
                         string += f"ошибка с {row['fio']}\n"
+                    else:
+                        string += f"обновил {row['fio']}\n"
 
                     break
         if string == '':

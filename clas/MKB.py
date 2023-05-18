@@ -54,17 +54,20 @@ class MKB(BaseModel):
 
             # если строки нет, то добавляем
             if res is None:
-                string += f"добавил строку {row['mkb_code']}\n"
                 row['date_update'] = datetime.now()
                 row.pop('mkb_id')
                 query = t_dict_mkb.insert().values(**row)
-                await database.execute(query)
+                try:
+                    await database.execute(query)
+                except DataError:
+                    string += f"ошибка в строчке {row['mkb_code']}\n"
+                else:
+                    string += f"добавил строку {row['mkb_code']}\n"
                 continue
 
             # если строчка есть ищем несовпадение значений, чтобы заменить
             for key, value in dict(res).items():
                 if row[key] != value and key != 'date_update':
-                    string += f"обновил строку {row['mkb_code']}\n"
                     row['date_update'] = datetime.now()
                     query = t_dict_mkb.update()\
                         .where(
@@ -74,6 +77,8 @@ class MKB(BaseModel):
                         await database.execute(query)
                     except DataError:
                         string += f"ошибка в строчке {row['mkb_code']}\n"
+                    else:
+                        string += f"обновил строку {row['mkb_code']}\n"
 
                     break
         if string == '':
