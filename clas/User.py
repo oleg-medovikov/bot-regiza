@@ -77,3 +77,43 @@ class User (BaseModel):
                 'role': 'mo',
                 'date_update':  datetime.now(),
             }]
+
+    @staticmethod
+    async def update_all(list_: list) -> str:
+        "Обновление всей таблицы"
+        if len(list_) == 0:
+            return 'Нечего обновлять'
+        string = ''
+        for row in list_:
+            query = t_users.select(
+                t_users == row['u_id']
+                )
+            res = await database.fetch_one(query)
+
+            # если строки нет, то добавляем
+            if res is None:
+                string += f"добавил {row['fio']}\n"
+                row['date_update'] = datetime.now()
+                row.pop('u_id')
+                query = t_users.insert().values(**row)
+                await database.execute(query)
+                continue
+
+            # если строчка есть ищем несовпадение значений, чтобы заменить
+            for key, value in dict(res).items():
+                if row[key] != value and key != 'date_update':
+                    string += f"обновил {row['fio']}\n"
+                    row['date_update'] = datetime.now()
+                    query = t_users.update()\
+                        .where(
+                            t_users.c.u_id == row['u_id'])\
+                        .values(**row)
+                    try:
+                        await database.execute(query)
+                    except DataError:
+                        string += f"ошибка с {row['fio']}\n"
+
+                    break
+        if string == '':
+            string = 'Нечего обновлять'
+        return string
