@@ -1,11 +1,18 @@
 from aiogram.types import BotCommand
 
+dict_ = {
+    "start": "Приветсвие",
+    "meddoc": "Найти документ по его номеру",
+
+}
+
+
 async def set_default_commands(dp):
-    commands = [
-        BotCommand(command="start",
-            description="Приветсвие"),
-        BotCommand(command="meddoc",
-            description="Найти документ по его номеру"),
-        ]
+    commands = []
+
+    for key, value in dict_.items():
+        commands.append(
+            BotCommand(command=key, description=value)
+            )
 
     await dp.bot.set_my_commands(commands)

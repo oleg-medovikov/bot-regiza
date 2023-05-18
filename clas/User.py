@@ -26,7 +26,7 @@ class User (BaseModel):
     @staticmethod
     async def get(U_ID: int) -> 'User':
         "Вытаскиваем пользователя по id"
-        query = t_users.select(t_users.c.u_id == U_ID)
+        query = t_users.select(t_users.c.u_id == int(U_ID))
         res = await database.fetch_one(query)
 
         if res is None:
@@ -40,7 +40,7 @@ class User (BaseModel):
         query = t_users.select(t_users.c.u_id == self.__dict__)
         res = await database.fetch_one(query)
 
-        if not res is None:
+        if res is not None:
             return True
         else:
             return False
