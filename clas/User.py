@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from sqlalchemy import and_
 
 from base import database, t_users
 
@@ -9,7 +10,7 @@ class User (BaseModel):
     fio:         str
     org:         str
     role:        str
-    date_create: datetime
+    date_update: datetime
 
     async def add(self):
         "Добавление пользователя в таблицу пользователей"
@@ -34,6 +35,20 @@ class User (BaseModel):
 
         return User(**res)
 
+    @staticmethod
+    async def admin(U_ID: int) -> 'User':
+        "Вытаскиваем пользователя по id с проверкой на админа"
+        query = t_users.select(and_(
+            t_users.c.u_id == int(U_ID),
+            t_users.c.role == 'admin'
+            ))
+        res = await database.fetch_one(query)
+
+        if res is None:
+            raise ValueError("Вы не являетесь админом!")
+
+        return User(**res)
+
     async def check(self) -> bool:
         "Проверка пользователя на наличие в базе"
 
@@ -44,3 +59,21 @@ class User (BaseModel):
             return True
         else:
             return False
+
+    @staticmethod
+    async def get_all():
+        query = t_users.select().order_by(t_users.c.u_id)
+        list_ = []
+        for row in await database.fetch_all(query):
+            list_.append(User(**row).dict())
+
+        if len(list_):
+            return list_
+        else:
+            return [{
+                'u_id': 0,
+                'fio':  'Vasea',
+                'org':  0,
+                'role': 'mo',
+                'date_update':  datetime.now(),
+            }]

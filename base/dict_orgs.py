@@ -11,3 +11,5 @@ t_dict_orgs = Table(
     Column('org_name', String),
     Column('date_update', DateTime),
 )
+
+t_dict_orgs.__table_args__ = {'extend_existing': True}

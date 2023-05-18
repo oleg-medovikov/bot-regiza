@@ -2,7 +2,7 @@ from aiogram.types import BotCommand
 
 dict_ = {
     "start": "Приветсвие",
-    "meddoc": "Найти документ по его номеру",
+    "admin_panel": "Панель настроек бота",
 
 }
 
