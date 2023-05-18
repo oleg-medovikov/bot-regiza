@@ -1,62 +1,46 @@
-from sqlalchemy.sql.expression import values
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from datetime import datetime
 
-from base import database, t_users, t_people
+from base import database, t_users
 
 
 class User (BaseModel):
-    u_id : int
-    first_name : str
-    last_name : str
-    username : str
+    u_id:        int
+    fio:         str
+    org:         str
+    role:        str
+    date_create: datetime
 
-    async def add(USER): 
+    async def add(self):
         "Добавление пользователя в таблицу пользователей"
 
-        query = t_users.select(t_users.c.u_id == USER.id)
-
+        query = t_users.select(t_users.c.u_id == self.u_id)
         res = await database.fetch_one(query)
 
-        if not res is None:
+        if res is not None:
             return 'Есть такой юзер'
         else:
-            values = {
-                    'u_id' : USER.id,
-                    'first_name' : USER.first_name,
-                    'last_name' : USER.last_name,
-                    'username' : USER.username
-                    }
-            query = t_users.insert().values(**values)
-            
+            query = t_users.insert().values(self.__dict__)
             await database.execute(query)
-    
-    async def add_people(USER):
-        "Добавим людей которые писали боту"
-        query = t_people.select(t_people.c.u_id == USER.id)
 
+    @staticmethod
+    async def get(U_ID: int) -> 'User':
+        "Вытаскиваем пользователя по id"
+        query = t_users.select(t_users.c.u_id == U_ID)
         res = await database.fetch_one(query)
 
         if res is None:
-            values = {
-                    'u_id' : USER.id,
-                    'first_name' : USER.first_name,
-                    'last_name' : USER.last_name,
-                    'username' : USER.username
-                    }
-            query = t_people.insert().values(**values)
-            
-            await database.execute(query)
+            raise ValueError("Неизвестный U_ID!")
 
+        return User(**res)
 
-    async def check(USER) -> bool:
+    async def check(self) -> bool:
         "Проверка пользователя на наличие в базе"
 
-        query = t_users.select(t_users.c.u_id == USER.id)
-        
+        query = t_users.select(t_users.c.u_id == self.__dict__)
         res = await database.fetch_one(query)
 
         if not res is None:
             return True
         else:
             return False
- 
