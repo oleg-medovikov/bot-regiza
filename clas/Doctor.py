@@ -35,7 +35,7 @@ class Doctor (BaseModel):
 
     @staticmethod
     async def fio(ID) -> str:
-        "Это ненужно, так как буду джойнить"
+        "Это не нужно, так как буду джойнить"
         query = t_dict_doctor.select(
             t_dict_doctor.c.doc_id == ID
         )

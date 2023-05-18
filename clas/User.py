@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy import and_
+from asyncpg.exceptions import DataError
 
 from base import database, t_users
 

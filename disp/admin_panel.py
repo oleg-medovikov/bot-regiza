@@ -3,7 +3,7 @@ from aiogram import types
 from pandas import DataFrame
 import os
 
-from clas import User, MKB
+from clas import User, MKB, Organization
 from func import delete_message, write_styling_excel
 
 MESS = """*Доступные команды для редактирования базы*
@@ -49,8 +49,9 @@ async def send_objects_file(message: types.Message):
     COMMAND = message.text.replace('/', '')
 
     JSON = {
-        'get_users': User.get_all(),
-        'get_mkb':   MKB.get_all(),
+        'get_users':         User.get_all(),
+        'get_mkb':           MKB.get_all(),
+        'get_organizations': Organization.get_all(),
     }.get(COMMAND)
 
     df = DataFrame(data=await JSON)
