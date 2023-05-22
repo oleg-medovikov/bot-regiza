@@ -1,7 +1,7 @@
 from .base import metadata
 
 from sqlalchemy import Table, Column, SmallInteger, String, \
-    DateTime, Boolean, Date, BigInteger
+    DateTime, Boolean, Date, BigInteger, Integer
 
 t_toxic_cases = Table(
     "toxic_cases",
@@ -52,7 +52,7 @@ t_toxic_cases = Table(
     Column('o_1105', Date),
 
     # 1106 - Токсичные вещества, часто встречающиеся
-    Column('o_1106', String),
+    Column('o_1106', Integer),
 
     # 1107 - Токсичные вещества
     Column('o_1107', String),
@@ -65,6 +65,12 @@ t_toxic_cases = Table(
 
     # 1110 - Оказана медицинская помощь
     Column('o_1110', SmallInteger),
+
+    # 1111 - Место наступления смерти
+    Column('o_1111', String),
+
+    # 1112 - Время прошедшее от поступления в лпу до смерти в часах
+    Column('o_1112', SmallInteger),
 
     # 1113 - Характер отравления
     Column('o_1113', SmallInteger),

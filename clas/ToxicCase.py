@@ -19,11 +19,13 @@ class ToxicCase (BaseModel):
     o_1103:          str
     o_1104:          date
     o_1105:          date
-    o_1106:          str
+    o_1106:          int
     o_1107:          str
     o_1108:          int
     o_1109:          int
     o_1110:          int
+    o_1111:          str
+    o_1112:          int
     o_1113:          int
     o_1114:          int
     o_1115:          int
@@ -49,4 +51,3 @@ class ToxicCase (BaseModel):
                 .values(self.dict())
 
         await database.execute(query)
-

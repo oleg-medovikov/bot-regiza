@@ -10,7 +10,7 @@ class Doctor (BaseModel):
     date_update: datetime
 
     @staticmethod
-    async def id(FIO) -> int:
+    async def id(FIO: str) -> int:
         query = t_dict_doctor.select(
             t_dict_doctor.c.doc_fio == FIO
         )
@@ -34,7 +34,7 @@ class Doctor (BaseModel):
         return res['doc_id']
 
     @staticmethod
-    async def fio(ID) -> str:
+    async def fio(ID: int) -> str:
         "Это не нужно, так как буду джойнить"
         query = t_dict_doctor.select(
             t_dict_doctor.c.doc_id == ID

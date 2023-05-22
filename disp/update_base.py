@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 from clas import User, MKB, Organization
-from func import delete_message
+from func import delete_message, send_large_message
 
 NAMES = {
     'users.xlsx': ['u_id', 'fio', 'org', 'role', 'date_update'],
@@ -65,5 +65,5 @@ async def update_base(message: types.Message):
     except TypeError as e:
         MESS = 'Пока не могу этот файл обработать\n' + str(e)
 
-    await message.answer(MESS)
+    await send_large_message(message, MESS)
     os.remove(DESTINATION)

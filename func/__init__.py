@@ -5,6 +5,7 @@ from .delete_message import delete_message
 from .send_message import bot_send_text, bot_send_file
 from .write_styling_excel import write_styling_excel
 from .dowload_cases import toxic_get_cases
+from .send_large_message import send_large_message
 
 __all__ = [
     'hello_message',
@@ -15,4 +16,5 @@ __all__ = [
     'bot_send_file',
     'write_styling_excel',
     'toxic_get_cases',
+    'send_large_message',
 ]

@@ -47,6 +47,7 @@ class MKB(BaseModel):
             return 'Нечего обновлять'
         string = ''
         for row in list_:
+            row['mkb_rpn'] = str(row['mkb_rpn'])
             query = t_dict_mkb.select(
                 t_dict_mkb.c.mkb_id == row['mkb_id']
                 )
@@ -59,8 +60,8 @@ class MKB(BaseModel):
                 query = t_dict_mkb.insert().values(**row)
                 try:
                     await database.execute(query)
-                except DataError:
-                    string += f"ошибка в строчке {row['mkb_code']}\n"
+                except Exception as e:
+                    string += f"ошибка в строчке {row['mkb_code']}\n {str(e)}"
                 else:
                     string += f"добавил строку {row['mkb_code']}\n"
                 continue
