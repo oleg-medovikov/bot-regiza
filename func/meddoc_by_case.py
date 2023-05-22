@@ -1,8 +1,8 @@
-from conf import REGIZ_TOKEN
+from conf import REGIZ_AUTH
 import requests
 import base64
 
-HEADER = dict(Authorization=REGIZ_TOKEN)
+HEADER = dict(Authorization=REGIZ_AUTH)
 
 
 def meddoc_by_case(MEDDOC_ID: int):
@@ -28,8 +28,8 @@ def meddoc_by_case(MEDDOC_ID: int):
         return 'Нет файла'
     else:
         try:
-            TEXT = base64.decodebytes( STRING.encode('utf-8')).decode('utf-16')
+            TEXT = base64.decodebytes(STRING.encode('utf-8')).decode('utf-16')
         except Exception as e:
-            return f'мне не удалось прочитать файл:\n {str(e)}' 
+            return f'мне не удалось прочитать файл:\n {str(e)}'
         else:
-            return TEXT 
+            return TEXT

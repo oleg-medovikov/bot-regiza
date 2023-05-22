@@ -11,6 +11,9 @@ MESS = """*Доступные команды для редактирования
     /get_users
     /get_mkb
     /get_organizations
+
+    *Выгрузка данных их нетрики*
+    /get_cases
     """.replace('_', '\\_')
 
 

@@ -1,14 +1,13 @@
 from .base import metadata
 
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Table, Column, SmallInteger, String, \
-    DateTime, Boolean, Date
+    DateTime, Boolean, Date, BigInteger
 
 t_toxic_cases = Table(
     "toxic_cases",
     metadata,
     # идентификатор случая лечения пациента
-    Column('case_biz_key', UUID, primary_key=True),
+    Column('case_biz_key', BigInteger, primary_key=True),
 
     # идентификатор организации dict_orgs
     Column('org_id', SmallInteger),
@@ -95,22 +94,3 @@ t_toxic_cases = Table(
     Column('errors', String),
 
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

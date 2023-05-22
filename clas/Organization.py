@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from asyncpg.exceptions import DataError
 from uuid import UUID
+from sqlalchemy import select
 
 from base import database, t_dict_orgs
 
@@ -11,6 +12,12 @@ class Organization(BaseModel):
     org_biz_key:    UUID
     org_name:       str
     date_update: datetime
+
+    @staticmethod
+    async def get_org_list() -> list:
+        'получаем список гуидов всех организаций'
+        query = select([t_dict_orgs.c.org_biz_key]).distinct()
+        return [x[0].urn[9:] for x in await database.fetch_all(query)]
 
     @staticmethod
     async def get_id(BIZ_KEY: str) -> int:

@@ -1,12 +1,11 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from uuid import UUID
 
 from base import database, t_toxic_cases
 
 
 class ToxicCase (BaseModel):
-    case_biz_key:    UUID
+    case_biz_key:    int
     org_id:          int
     history_number:  str
     sex:             bool

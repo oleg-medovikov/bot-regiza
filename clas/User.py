@@ -87,7 +87,7 @@ class User (BaseModel):
         string = ''
         for row in list_:
             query = t_users.select(
-                t_users == row['u_id']
+                t_users.c.u_id == row['u_id']
                 )
             res = await database.fetch_one(query)
 
