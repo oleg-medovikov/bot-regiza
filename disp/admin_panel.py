@@ -3,7 +3,7 @@ from aiogram import types
 from pandas import DataFrame
 import os
 
-from clas import User, MKB, Organization
+from clas import User, MKB, Organization, DictObser
 from func import delete_message, write_styling_excel
 
 MESS = """*Доступные команды для редактирования базы*
@@ -11,6 +11,7 @@ MESS = """*Доступные команды для редактирования
     /get_users
     /get_mkb
     /get_organizations
+    /get_dict_obser
 
     *Выгрузка данных их нетрики*
     /get_cases
@@ -35,6 +36,7 @@ DICT_XLSX = [
     'get_users',
     'get_mkb',
     'get_organizations',
+    'get_dict_obser',
 ]
 
 
@@ -55,6 +57,7 @@ async def send_objects_file(message: types.Message):
         'get_users':         User.get_all(),
         'get_mkb':           MKB.get_all(),
         'get_organizations': Organization.get_all(),
+        'get_dict_obser':    DictObser.get_all(),
     }.get(COMMAND)
 
     df = DataFrame(data=await JSON)

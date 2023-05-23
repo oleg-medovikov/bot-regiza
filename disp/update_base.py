@@ -3,13 +3,17 @@ from aiogram import types
 import os
 import pandas as pd
 
-from clas import User, MKB, Organization
+from clas import User, MKB, Organization, DictObser
 from func import delete_message, send_large_message
 
 NAMES = {
     'users.xlsx': ['u_id', 'fio', 'org', 'role', 'date_update'],
     'mkb.xlsx': ['mkb_id', 'mkb_code', 'mkb_rpn', 'date_update'],
     'organizations.xlsx': ['org_id', 'org_biz_key', 'org_name', 'date_update'],
+    'dict_obser.xlsx': [
+        'id', 'ob_code', 'ob_name', 'nsi_key',
+        'rpn_key', 'value', 'date_update'
+        ],
         }
 
 
@@ -58,6 +62,7 @@ async def update_base(message: types.Message):
         'users':         User.update_all(list_),
         'mkb':           MKB.update_all(list_),
         'organizations': Organization.update_all(list_),
+        'dict_obser':    DictObser.update_all(list_),
         }.get(FILE['file_name'][:-5])
 
     try:

@@ -4,7 +4,7 @@ from .dict_orgs import t_dict_orgs
 from .dict_mkb import t_dict_mkb
 from .dict_doctor import t_dict_doctor
 from .toxic_cases import t_toxic_cases
-
+from .dict_obser import t_dict_obser
 
 metadata.create_all(engine)
 
@@ -17,4 +17,5 @@ __all__ = [
     't_dict_mkb',
     't_dict_doctor',
     't_toxic_cases',
-    ]
+    't_dict_obser',
+]

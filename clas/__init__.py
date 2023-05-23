@@ -3,6 +3,7 @@ from .MKB import MKB
 from .Organization import Organization
 from .Doctor import Doctor
 from .ToxicCase import ToxicCase
+from .DictObser import DictObser
 
 __all__ = [
     'User',
@@ -10,4 +11,5 @@ __all__ = [
     'Organization',
     'Doctor',
     'ToxicCase',
+    'DictObser',
 ]
