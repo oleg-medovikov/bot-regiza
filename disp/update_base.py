@@ -11,7 +11,7 @@ NAMES = {
     'mkb.xlsx': ['mkb_id', 'mkb_code', 'mkb_rpn', 'date_update'],
     'organizations.xlsx': ['org_id', 'org_biz_key', 'org_name', 'date_update'],
     'dict_obser.xlsx': [
-        'id', 'ob_code', 'ob_name', 'nsi_key',
+        'id', 'obs_code', 'obs_name', 'nsi_key',
         'rpn_key', 'value', 'date_update'
         ],
         }

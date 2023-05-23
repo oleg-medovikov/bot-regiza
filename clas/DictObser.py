@@ -7,8 +7,8 @@ from base import database, t_dict_obser
 
 class DictObser(BaseModel):
     id:          int
-    ob_code:     int
-    ob_name:     str
+    obs_code:     int
+    obs_name:     str
     nsi_key:     int
     rpn_key:     str
     value:       str
@@ -50,14 +50,15 @@ class DictObser(BaseModel):
             # если строки нет, то добавляем
             if res is None:
                 row['date_update'] = datetime.now()
+                ID = row['id']
                 row.pop('id')
                 query = t_dict_obser.insert().values(**row)
                 try:
                     await database.execute(query)
                 except Exception as e:
-                    string += f"ошибка в строчке {row['id']}\n {str(e)}"
+                    string += f"ошибка в строчке {ID}\n {str(e)}"
                 else:
-                    string += f"добавил строку {row['id']}\n"
+                    string += f"добавил строку {ID}\n"
                 continue
 
             # если строчка есть ищем несовпадение значений, чтобы заменить
