@@ -1,5 +1,6 @@
 from func import set_default_commands
 from base import database
+from aiogram.utils.exceptions import NetworkError
 
 import asyncio
 
@@ -12,6 +13,6 @@ async def on_startup(dp):
     while True:
         try:
             await dp.start_polling()
-        except Exception as e:
-            print(str(e))
+        except NetworkError:
+            # print(str(e))
             asyncio.sleep(5)

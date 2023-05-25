@@ -15,6 +15,18 @@ class DictObser(BaseModel):
     date_update: datetime
 
     @staticmethod
+    async def gen_dict_nsi(OBSER: int) -> dict:
+        "генерируем конкретный словарь для обсервейшена"
+        query = t_dict_obser.select().where(
+            t_dict_obser.c.obs_code == OBSER
+        )
+        DICT = {}
+        for ROW in await database.fetch_all(query):
+            DICT[ROW['nsi_key']] = ROW['nsi_key']
+            DICT[ROW['value']] = ROW['nsi_key']
+        return DICT
+
+    @staticmethod
     async def get_all():
         query = t_dict_obser.select().order_by(t_dict_obser.c.id)
         list_ = []
