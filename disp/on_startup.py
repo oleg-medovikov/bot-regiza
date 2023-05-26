@@ -16,3 +16,5 @@ async def on_startup(dp):
         except NetworkError:
             # print(str(e))
             asyncio.sleep(5)
+        except KeyboardInterrupt:
+            pass

@@ -61,4 +61,4 @@ async def get_cases(message: types.Message):
 
         await TC.add()
 
-    return await message.answer('Готово!', parse_mode='Markdown')
+    return await message.answer(mess, parse_mode='Markdown')

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from sqlalchemy import and_
 from asyncpg.exceptions import DataError
 
 from base import database, t_dict_obser
@@ -13,6 +14,19 @@ class DictObser(BaseModel):
     rpn_key:     str
     value:       str
     date_update: datetime
+
+    @staticmethod
+    async def nsi_key_by_value(VALUE: str, OBSER: int) -> int:
+        "пробуем найти значение ключа по слову"
+        query = t_dict_obser.select().where(and_(
+            t_dict_obser.c.obs_code == OBSER,
+            t_dict_obser.c.value == VALUE
+            ))
+        res = await database.fetch_one(query)
+        if res is None:
+            raise ValueError
+        else:
+            return res['nsi_key']
 
     @staticmethod
     async def gen_dict_nsi(OBSER: int) -> dict:
