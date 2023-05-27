@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-
+from typing import Optional
 from base import database, t_toxic_cases
 
 
@@ -14,26 +14,26 @@ class ToxicCase (BaseModel):
     diagnoz_date:    datetime
     doc_smo:         int
     doc_md:          int
-    o_303:           date
-    o_1101:          int
-    o_1103:          str
-    o_1104:          date
-    o_1105:          date
-    o_1106:          int
-    o_1107:          str
-    o_1108:          int
-    o_1109:          int
-    o_1110:          int
-    o_1111:          str
-    o_1112:          int
-    o_1113:          int
-    o_1114:          int
-    o_1115:          int
-    o_1116:          str
-    o_1117:          int
-    o_1118:          str
-    o_1119:          int
-    o_1123:          str
+    o_303:           Optional[date]
+    o_1101:          Optional[int]
+    o_1103:          Optional[str]
+    o_1104:          Optional[date]
+    o_1105:          Optional[date]
+    o_1106:          Optional[int]
+    o_1107:          Optional[str]
+    o_1108:          Optional[int]
+    o_1109:          Optional[int]
+    o_1110:          Optional[int]
+    o_1111:          Optional[str]
+    o_1112:          Optional[int]
+    o_1113:          Optional[int]
+    o_1114:          Optional[int]
+    o_1115:          Optional[int]
+    o_1116:          Optional[str]
+    o_1117:          Optional[int]
+    o_1118:          Optional[str]
+    o_1119:          Optional[int]
+    o_1123:          Optional[str]
     errors:          str
 
     async def add(self):

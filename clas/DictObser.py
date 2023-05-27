@@ -8,8 +8,8 @@ from base import database, t_dict_obser
 
 class DictObser(BaseModel):
     id:          int
-    obs_code:     int
-    obs_name:     str
+    obs_code:    int
+    obs_name:    str
     nsi_key:     int
     rpn_key:     str
     value:       str
