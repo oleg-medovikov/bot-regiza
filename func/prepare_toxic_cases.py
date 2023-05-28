@@ -63,12 +63,30 @@ def check_dates(DICT: dict) -> dict:
 
 
 async def check_distric(VALUE: str, DICT: dict) -> dict:
+    if VALUE[0:2] == '41':
+        DICT['o_1123'] = 1000
+        DICT['errors'] = DICT.get('errors', '') \
+            + '\n Ленинградская область!'
+        return DICT
+    if VALUE == '40000000000':
+        DICT['o_1123'] = 4000
+        return DICT
+
+    if VALUE[0:2] == '40':
+        DICT['o_1123'] = int(VALUE[2:5])
+        return DICT
+
+    if VALUE == '0':
+        DICT['o_1123'] = 0
+        return DICT
+
     try:
-        DICT['o_1123'] = await DictObser.nsi_key_by_rpn_key(VALUE, 1123)
+        DICT['o_1123'] = await DictObser.nsi_key_by_value(VALUE, 1123)
     except ValueError:
         DICT['o_1123'] = 0
         DICT['errors'] = DICT.get('errors', '') \
-            + '\n неправильно передан район'
+            + f'\n неправильно передан район {VALUE}'
+
     return DICT
 
 

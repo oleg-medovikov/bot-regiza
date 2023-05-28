@@ -114,8 +114,27 @@ class ToxicCase (BaseModel):
             and_(
                 t_toxic_cases.c.o_1113 == t_1113.c.nsi_key,
                 t_1113.c.obs_code == 1113)
+        ).join(
+            t_1115,
+            and_(
+                t_toxic_cases.c.o_1115 == t_1115.c.nsi_key,
+                t_1115.c.obs_code == 1115)
+        ).join(
+            t_1117,
+            and_(
+                t_toxic_cases.c.o_1117 == t_1117.c.nsi_key,
+                t_1117.c.obs_code == 1117)
+        ).join(
+            t_1119,
+            and_(
+                t_toxic_cases.c.o_1119 == t_1119.c.nsi_key,
+                t_1119.c.obs_code == 1119)
+        ).join(
+            t_1123,
+            and_(
+                t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
+                t_1123.c.obs_code == 1123)
         )
-
 
         query = select([
             (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
@@ -142,8 +161,13 @@ class ToxicCase (BaseModel):
             (t_toxic_cases.c.o_1112).label('Время до смерти (1112)'),
             (t_1113.c.value).label('Характер отравления (1113)'),
             (t_toxic_cases.c.o_1114).label('Количество отравившихся (1114)'),
-
-
+            (t_1115.c.value).label('Обстоятельства отравления (1115)'),
+            (t_toxic_cases.c.o_1116).label('Обстоятельства текст (1116)'),
+            (t_1117.c.value).label('Место приобретения яда (1117)'),
+            (t_toxic_cases.c.o_1118).label('Место приобретения текст (1118)'),
+            (t_1119.c.value).label('Социальное положение (1119)'),
+            (t_1123.c.value).label('Район (1123)'),
+            (t_toxic_cases.c.errors).label('Ошибки заполнения'),
             ]).order_by(desc(t_toxic_cases.c.o_303))\
             .select_from(j).where(
             t_toxic_cases.c.o_303.between(START, END)
