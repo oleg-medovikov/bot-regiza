@@ -1,10 +1,13 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from typing import Optional
 from base import database, t_toxic_cases, t_dict_doctor, \
     t_dict_mkb, t_dict_obser, t_dict_orgs
-from sqlalchemy import desc, select, case, and_
+from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql import extract
+
+from pandas import DataFrame
+from func import month_name
 
 
 class ToxicCase (BaseModel):
@@ -182,6 +185,50 @@ class ToxicCase (BaseModel):
         res = await database.fetch_all(query)
         return [dict(r) for r in res]
 
+    @staticmethod
+    async def svod_toxic_district() -> list:
+        t_1123 = aliased(t_dict_obser)
+        t_1 = aliased(t_dict_obser)
+
+        j = t_toxic_cases.join(
+            t_1123,
+            and_(
+                t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
+                t_1123.c.obs_code == 1123
+            ),
+        ).join(
+            t_dict_mkb,
+            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id
+        ).join(
+            t_1,
+            and_(
+                (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
+                t_1.c.obs_code == 1
+            ),
+        )
+
+        query = select([
+            (t_toxic_cases.c.case_biz_key).label('id'),
+            (t_1.c.value).label('Месяц'),
+            (t_1.c.nsi_key).label('номер'),
+            (t_1123.c.value).label('Район'),
+            (t_dict_mkb.c.mkb_code).label('Диагноз'),
+        ]).select_from(j).where(
+            extract('year', t_toxic_cases.c.o_303) == datetime.now().year
+        )
+
+        res = await database.fetch_all(query)
+        df = DataFrame(data=[dict(r) for r in res])
+
+        df = df.pivot_table(
+            index=['номер', 'Месяц', 'Район'],
+            columns=['Диагноз'],
+            values='id',
+            aggfunc='count'
+            )
+        df = df.fillna('')
+
+        return df
 
 
 

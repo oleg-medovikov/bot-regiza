@@ -1,10 +1,10 @@
 from pandas import DataFrame, ExcelWriter
 
 
-def write_styling_excel(path: str, df: DataFrame, sheet_name: str):
+def write_styling_excel(path: str, df: DataFrame, sheet_name: str, index=False):
     "форматируем колонки файла эксель"
     with ExcelWriter(path) as writer:
-        df.to_excel(writer, sheet_name=sheet_name, index=False, na_rep='NaN')
+        df.to_excel(writer, sheet_name=sheet_name, index=index, na_rep='NaN')
 
         # автонастройка ширины колонок
         # решил что больше ничего и не нужно

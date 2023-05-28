@@ -27,11 +27,14 @@ async def get_cases(message: types.Message):
 
     mess = f'Размер датафрейма {len(df)} \n\n'
 
+    count = 0
     for TC in await prepare_toxic_cases(df):
         try:
             await TC.add()
         except Exception as e:
             mess += str(e)
-            break
+        else:
+            count += 1
+    mess += f'Обработано случаев: {count}'
 
     return await message.answer(mess, parse_mode='Markdown')

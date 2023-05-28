@@ -49,6 +49,7 @@ async def check_integer(VALUE: str, OBSER: int, DICT: dict) -> dict:
 
 def check_dates(DICT: dict) -> dict:
     if DICT['o_303'] > datetime.now():
+        DICT['critical_error'] = True
         DICT['errors'] = DICT.get('errors', '') \
             + '\n дата диагноза 303 больше текущей даты'
 
@@ -117,6 +118,7 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['o_1102'] = row['1102']
         DICT['o_1103'] = row['1103']
         DICT['o_1107'] = row['1107']
+        DICT['o_1111'] = row['1111']
         DICT['o_1116'] = row['1116']
         DICT['o_1118'] = row['1118']
 
@@ -130,10 +132,11 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         except ValueError:
             continue
         DICT = check_dates(DICT)
-
+        if DICT['critical_error']:
+            continue
         # Проверка ключей словарей
         LIST_OBSER = [
-            1101, 1106, 1108, 1109, 1110, 1113, 1114, 1115, 1117, 1119
+            1101, 1106, 1108, 1109, 1110, 1112, 1113, 1114, 1115, 1117, 1119
         ]
 
         for OBSER in LIST_OBSER:
