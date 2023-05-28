@@ -4,7 +4,8 @@ from .start import send_welcome
 from .admin_panel import admin_panel, send_objects_file
 from .update_base import update_base
 from .get_cases import get_cases
-from .file_cases_mo import file_cases_mo
+from .file_cases_mo import file_cases_mo, file_get_toxic_cases, \
+    process_simple_calendar
 
 
 __all__ = [
@@ -17,4 +18,6 @@ __all__ = [
     'update_base',
     'get_cases',
     'file_cases_mo',
+    'file_get_toxic_cases',
+    'process_simple_calendar',
 ]

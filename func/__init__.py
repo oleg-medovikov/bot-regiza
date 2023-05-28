@@ -7,7 +7,8 @@ from .write_styling_excel import write_styling_excel
 from .dowload_cases import toxic_get_cases
 from .send_large_message import send_large_message
 from .prepare_toxic_cases import prepare_toxic_cases
-from .return_mounth import return_mounth
+from .return_month import return_month
+from .month_name import month_name
 
 __all__ = [
     'hello_message',
@@ -20,5 +21,6 @@ __all__ = [
     'toxic_get_cases',
     'send_large_message',
     'prepare_toxic_cases',
-    'return_mounth',
+    'return_month',
+    'month_name',
 ]
