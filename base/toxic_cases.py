@@ -94,7 +94,7 @@ t_toxic_cases = Table(
     Column('o_1119', SmallInteger),
 
     # 1123 - Район
-    Column('o_1123', String),
+    Column('o_1123', SmallInteger),
 
     # ошибки заполнения
     Column('errors', String),

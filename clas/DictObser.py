@@ -29,6 +29,19 @@ class DictObser(BaseModel):
             return res['nsi_key']
 
     @staticmethod
+    async def nsi_key_by_rpn_key(VALUE: str, OBSER: int) -> int:
+        "пробуем найти значение ключа по слову"
+        query = t_dict_obser.select().where(and_(
+            t_dict_obser.c.obs_code == OBSER,
+            t_dict_obser.c.rpn_key == VALUE
+            ))
+        res = await database.fetch_one(query)
+        if res is None:
+            raise ValueError
+        else:
+            return res['nsi_key']
+
+    @staticmethod
     async def gen_dict_nsi(OBSER: int) -> dict:
         "генерируем конкретный словарь для обсервейшена"
         query = t_dict_obser.select().where(

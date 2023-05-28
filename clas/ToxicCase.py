@@ -37,7 +37,7 @@ class ToxicCase (BaseModel):
     o_1117:          Optional[int]
     o_1118:          Optional[str]
     o_1119:          Optional[int]
-    o_1123:          Optional[str]
+    o_1123:          Optional[int]
     errors:          str
 
     async def add(self):
@@ -70,6 +70,7 @@ class ToxicCase (BaseModel):
         t_1115 = aliased(t_dict_obser)
         t_1117 = aliased(t_dict_obser)
         t_1119 = aliased(t_dict_obser)
+        t_1123 = aliased(t_dict_obser)
 
         j = t_toxic_cases.join(
             t_dict_orgs,

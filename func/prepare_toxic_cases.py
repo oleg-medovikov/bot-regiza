@@ -62,6 +62,16 @@ def check_dates(DICT: dict) -> dict:
     return DICT
 
 
+async def check_distric(VALUE: str, DICT: dict) -> dict:
+    try:
+        DICT['o_1123'] = await DictObser.nsi_key_by_rpn_key(VALUE, 1123)
+    except ValueError:
+        DICT['o_1123'] = 0
+        DICT['errors'] = DICT.get('errors', '') \
+            + '\n неправильно передан район'
+    return DICT
+
+
 async def prepare_toxic_cases(DF: DataFrame) -> list:
     "Превращаем таблицу данных в список ToxicCase"
     LIST = []
@@ -90,7 +100,6 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['o_1107'] = row['1107']
         DICT['o_1116'] = row['1116']
         DICT['o_1118'] = row['1118']
-        DICT['o_1123'] = row['1123']
 
         # Даты отдельно
         try:
@@ -110,6 +119,9 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
 
         for OBSER in LIST_OBSER:
             DICT = await check_integer(row[str(OBSER)], OBSER, DICT)
+
+        # на последок - районы
+        DICT = await check_distric(row['1123'], DICT)
 
         LIST.append(ToxicCase(**DICT))
     return LIST
