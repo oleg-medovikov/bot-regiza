@@ -26,7 +26,8 @@ async def check_org_id(ORG_NAME: str, DICT: dict) -> dict:
 
 
 async def check_integer(VALUE: str, OBSER: int, DICT: dict) -> dict:
-    if VALUE is None:
+    if VALUE is None or VALUE != VALUE:
+        DICT[f'o_{OBSER}'] = -1
         DICT['errors'] = DICT.get('errors', '') \
             + f'\n пустое значение показателя {OBSER}'
         return DICT
@@ -37,6 +38,7 @@ async def check_integer(VALUE: str, OBSER: int, DICT: dict) -> dict:
         try:
             DICT[f'o_{OBSER}'] = await DictObser.nsi_key_by_value(VALUE, OBSER)
         except ValueError:
+            DICT[f'o_{OBSER}'] = -1
             DICT['errors'] = DICT.get('errors', '') \
                 + f'\n неправильное значение в показателе {OBSER}: {VALUE}'
         else:
@@ -67,6 +69,7 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
     for row in DF.to_dict('records'):
         DICT = {}
         DICT['critical_error'] = False
+        DICT['errors'] = ''
         # приступаем к проверке данных, сначала самое критичное
         DICT = check_biz_key(row['case_biz_key'], DICT)
         DICT = await check_org_id(row['medical_help_name'], DICT)
@@ -82,6 +85,7 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['diagnoz_date'] = row['date_aff_first']
         DICT['doc_smo'] = await Doctor.id(row['smo_fio'])
         DICT['doc_md'] = await Doctor.id(row['meddoc_fio'])
+        DICT['o_1102'] = row['1102']
         DICT['o_1103'] = row['1103']
         DICT['o_1107'] = row['1107']
         DICT['o_1116'] = row['1116']
@@ -89,9 +93,14 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['o_1123'] = row['1123']
 
         # Даты отдельно
-        DICT['o_303'] = datetime.strptime(row['303'], '%d.%m.%Y')
-        DICT['o_1104'] = datetime.strptime(row['1104'], '%d.%m.%Y')
-        DICT['o_1105'] = datetime.strptime(row['1105'], '%d.%m.%Y')
+        try:
+            DICT['o_303'] = datetime.strptime(row['303'], '%d.%m.%Y')
+            DICT['o_1104'] = datetime.strptime(row['1104'], '%d.%m.%Y')
+            DICT['o_1105'] = datetime.strptime(row['1105'], '%d.%m.%Y')
+        except TypeError:
+            continue
+        except ValueError:
+            continue
         DICT = check_dates(DICT)
 
         # Проверка ключей словарей
