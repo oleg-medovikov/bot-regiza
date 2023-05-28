@@ -93,6 +93,7 @@ async def check_distric(VALUE: str, DICT: dict) -> dict:
 async def prepare_toxic_cases(DF: DataFrame) -> list:
     "Превращаем таблицу данных в список ToxicCase"
     LIST = []
+    DF = DF.fillna('')
 
     for row in DF.to_dict('records'):
         DICT = {}

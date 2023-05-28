@@ -160,7 +160,10 @@ class ToxicCase (BaseModel):
             (t_toxic_cases.c.o_1111).label('Место наступления смерти (1111)'),
             (t_toxic_cases.c.o_1112).label('Время до смерти (1112)'),
             (t_1113.c.value).label('Характер отравления (1113)'),
-            (t_toxic_cases.c.o_1114).label('Количество отравившихся (1114)'),
+            (case(
+                (t_toxic_cases.c.o_1114 < 0, None),
+                else_=t_toxic_cases.c.o_1114
+            )).label('Количество отравившихся (1114)'),
             (t_1115.c.value).label('Обстоятельства отравления (1115)'),
             (t_toxic_cases.c.o_1116).label('Обстоятельства текст (1116)'),
             (t_1117.c.value).label('Место приобретения яда (1117)'),

@@ -31,6 +31,7 @@ async def file_cases_mo(message: types.Message):
     JSON = await ToxicCase.file_cases_mo(START, END, MO)
 
     df = DataFrame(data=JSON)
+    df = df.fillna('')
     FILENAME = f'/tmp/toxic_case_{str(START)}_{str(END)}.xlsx'
     SHETNAME = 'def'
 
