@@ -161,7 +161,10 @@ class ToxicCase (BaseModel):
             (t_1109.c.value).label('Лицо, установившее диагноз (1109)'),
             (t_1110.c.value).label('Оказана медицинская помощь (1110)'),
             (t_toxic_cases.c.o_1111).label('Место наступления смерти (1111)'),
-            (t_toxic_cases.c.o_1112).label('Время до смерти (1112)'),
+            (case(
+                (t_toxic_cases.c.o_1112 == -1, None),
+                else_=t_toxic_cases.c.o_1112,
+            )).label('Время до смерти (1112)'),
             (t_1113.c.value).label('Характер отравления (1113)'),
             (case(
                 (t_toxic_cases.c.o_1114 < 0, None),
@@ -180,7 +183,7 @@ class ToxicCase (BaseModel):
         )
         if MO != 'all':
             query = query.where(
-                t_toxic_cases.c.org_id == MO
+                t_toxic_cases.c.org_id == int(MO)
             )
         res = await database.fetch_all(query)
         return [dict(r) for r in res]

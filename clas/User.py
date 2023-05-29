@@ -94,7 +94,6 @@ class User (BaseModel):
             # если строки нет, то добавляем
             if res is None:
                 row['date_update'] = datetime.now()
-                row.pop('u_id')
                 query = t_users.insert().values(**row)
                 try:
                     await database.execute(query)

@@ -11,7 +11,7 @@ def check_biz_key(KEY: str, DICT: dict) -> dict:
     except ValueError:
         DICT['critical_error'] = True
         DICT['errors'] = DICT.get('errors', '') \
-            + f'\n неправильный case_biz_key \n{KEY}'
+            + f'неправильный case_biz_key {KEY} \n'
     return DICT
 
 
@@ -26,10 +26,11 @@ async def check_org_id(ORG_NAME: str, DICT: dict) -> dict:
 
 
 async def check_integer(VALUE: str, OBSER: int, DICT: dict) -> dict:
-    if VALUE is None or VALUE != VALUE:
+    if VALUE is None or VALUE != VALUE or VALUE == '':
         DICT[f'o_{OBSER}'] = -1
-        DICT['errors'] = DICT.get('errors', '') \
-            + f'\n пустое значение показателя {OBSER}'
+        if OBSER not in [1112]:
+            DICT['errors'] = DICT.get('errors', '') \
+                + f'пустое значение показателя {OBSER}\n'
         return DICT
 
     try:
@@ -40,10 +41,10 @@ async def check_integer(VALUE: str, OBSER: int, DICT: dict) -> dict:
         except ValueError:
             DICT[f'o_{OBSER}'] = -1
             DICT['errors'] = DICT.get('errors', '') \
-                + f'\n неправильное значение в показателе {OBSER}: {VALUE}'
+                + f'неправильное значение в показателе {OBSER}: {VALUE}\n'
         else:
             DICT['errors'] = DICT.get('errors', '') \
-                + f'\n значение вместо ключа в показателе {OBSER}'
+                + f'значение вместо ключа в показателе {OBSER}\n'
     return DICT
 
 
@@ -51,15 +52,15 @@ def check_dates(DICT: dict) -> dict:
     if DICT['o_303'] > datetime.now():
         DICT['critical_error'] = True
         DICT['errors'] = DICT.get('errors', '') \
-            + '\n дата диагноза 303 больше текущей даты'
+            + 'дата диагноза 303 больше текущей даты\n'
 
     if DICT['o_1104'] > DICT['o_303']:
         DICT['errors'] = DICT.get('errors', '') \
-            + '\n дата отравления 1104 позднее даты диагноза 303'
+            + 'дата отравления 1104 позднее даты диагноза 303\n'
 
     if DICT['o_1105'] > DICT['o_303']:
         DICT['errors'] = DICT.get('errors', '') \
-            + '\n первичное обращения 1105 позднее даты диагноза 303'
+            + 'первичное обращения 1105 позднее даты диагноза 303\n'
     return DICT
 
 
@@ -67,7 +68,7 @@ async def check_distric(VALUE: str, DICT: dict) -> dict:
     if VALUE[0:2] == '41':
         DICT['o_1123'] = 1000
         DICT['errors'] = DICT.get('errors', '') \
-            + '\n Ленинградская область!'
+            + 'Ленинградская область!\n'
         return DICT
     if VALUE == '40000000000':
         DICT['o_1123'] = 4000
@@ -86,7 +87,7 @@ async def check_distric(VALUE: str, DICT: dict) -> dict:
     except ValueError:
         DICT['o_1123'] = 0
         DICT['errors'] = DICT.get('errors', '') \
-            + f'\n неправильно передан район {VALUE}'
+            + f'неправильно передан район {VALUE}\n'
 
     return DICT
 

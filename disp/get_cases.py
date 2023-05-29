@@ -21,7 +21,7 @@ async def get_cases(message: types.Message):
     ORGS = await Organization.get_org_list()
 
     try:
-        df = toxic_get_cases('2023-03-01', '2023-06-01', ORGS)
+        df = toxic_get_cases('2023-01-01', '2023-06-01', ORGS)
     except Exception as e:
         return await message.answer(str(e), parse_mode='Markdown')
 
