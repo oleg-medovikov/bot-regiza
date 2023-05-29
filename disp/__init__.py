@@ -7,6 +7,7 @@ from .get_cases import get_cases
 from .file_cases_mo import file_cases_mo, file_get_toxic_cases, \
     process_simple_calendar
 from .statistic import statistic_panel, send_statistic_file
+from .search_history_number import ask_history_number, load_history_number
 
 __all__ = [
     'bot',
@@ -22,4 +23,6 @@ __all__ = [
     'process_simple_calendar',
     'statistic_panel',
     'send_statistic_file',
+    'ask_history_number',
+    'load_history_number',
 ]

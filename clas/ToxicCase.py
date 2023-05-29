@@ -233,9 +233,54 @@ class ToxicCase (BaseModel):
 
         return df
 
+    @staticmethod
+    async def search_history_number(NUMBER: str, ORG: list) -> dict:
+        "поиск человека по истории болезни"
+        t_1123 = aliased(t_dict_obser)
+        t_1 = aliased(t_dict_obser)
+        t_doc_SMO = aliased(t_dict_doctor)
+        t_doc_MD = aliased(t_dict_doctor)
 
+        j = t_toxic_cases.join(
+            t_1123,
+            and_(
+                t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
+                t_1123.c.obs_code == 1123
+            ),
+        ).join(
+            t_dict_mkb,
+            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id
+        ).join(
+            t_1,
+            and_(
+                (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
+                t_1.c.obs_code == 1
+            ),
+        ).join(
+            t_doc_SMO,
+            t_toxic_cases.c.doc_smo == t_doc_SMO.c.doc_id
+        ).join(
+            t_doc_MD,
+            t_toxic_cases.c.doc_md == t_doc_MD.c.doc_id
+        ).join(
+            t_dict_orgs,
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id
+        )
 
-
-
-
-
+        query = select([
+            (t_1.c.value).label('Месяц'),
+            (t_toxic_cases.c.history_number).label('История болезни'),
+            (t_dict_orgs.c.org_name).label('Организация'),
+            (t_toxic_cases.c.case_biz_key).label('case_biz_key'),
+            (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
+            (t_1123.c.value).label('Район'),
+            (t_dict_mkb.c.mkb_code).label('Диагноз'),
+            (t_doc_SMO.c.doc_fio).label('Врач СМО'),
+            (t_doc_MD.c.doc_fio).label('Врач МД'),
+            (t_toxic_cases.c.errors).label('Ошибки заполнения'),
+        ]).select_from(j).where(and_(
+            t_toxic_cases.c.org_id.in_(ORG),
+            t_toxic_cases.c.history_number == NUMBER
+            ))
+        res = await database.fetch_all(query)
+        return [dict(r) for r in res]

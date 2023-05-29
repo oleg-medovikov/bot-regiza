@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher
-
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from conf import TELEGRAM_TOKEN
 
 import logging
@@ -10,4 +10,4 @@ logging.getLogger('schedule').addHandler(logging.NullHandler())
 
 
 bot = Bot(token=TELEGRAM_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())

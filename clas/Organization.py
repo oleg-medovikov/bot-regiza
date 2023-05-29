@@ -20,6 +20,12 @@ class Organization(BaseModel):
         return [x[0].urn[9:] for x in await database.fetch_all(query)]
 
     @staticmethod
+    async def get_org_id_list() -> list:
+        'получаем список id всех организаций'
+        query = select([t_dict_orgs.c.org_id]).distinct()
+        return [x[0] for x in await database.fetch_all(query)]
+
+    @staticmethod
     async def get_id(BIZ_KEY: str) -> int:
         query = t_dict_orgs.select(
             t_dict_orgs.c.org_biz_key == BIZ_KEY
