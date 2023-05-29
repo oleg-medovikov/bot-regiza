@@ -2,7 +2,7 @@ import asyncio
 import aioschedule
 from datetime import datetime, timedelta
 
-from clas import User, Organization
+from clas import User, Organization, ToxicCaseError
 from func import bot_send_text, toxic_get_cases, prepare_toxic_cases
 from conf import MASTER
 
@@ -40,6 +40,7 @@ async def get_case_automatic():
         except Exception as e:
             mess += str(e)
         else:
+            await ToxicCaseError.delete(TC.case_biz_key)
             count += 1
     mess += f'\n обработано {count} случаев'
     return bot_send_text(mess, int(USER.u_id))

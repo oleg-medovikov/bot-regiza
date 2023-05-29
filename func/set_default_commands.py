@@ -3,6 +3,7 @@ from aiogram.types import BotCommand
 dict_ = {
     "start": "Приветсвие",
     "file_get_toxic_cases": "Получить файл выгрузки за период",
+    "get_errors": "Получить файл с ошибками",
     "search_history_number": "Искать по номеру истории болезни",
     "statistic_panel": "Панель статистики и сводных отчетов",
     "admin_panel": "Панель настроек бота",

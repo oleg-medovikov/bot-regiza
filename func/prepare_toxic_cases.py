@@ -149,7 +149,9 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
             await add_error(DICT, 'одна из дат 303, 1104, 1105 пустая')
             continue
         except ValueError:
-            await add_error(DICT, 'даты 303, 1104, 1105 неверного формата')
+            mess = 'даты 303, 1104, 1105 неверного формата \n'
+            mess += f"303:{row['303']}\n 1104:{row['1104']}\n 1105:{row['1105']}"
+            await add_error(DICT, mess)
             continue
         DICT = check_dates(DICT)
         if DICT['critical_error']:

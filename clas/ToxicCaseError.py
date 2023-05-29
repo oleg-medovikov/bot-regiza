@@ -73,7 +73,7 @@ class ToxicCaseError (BaseModel):
             (t_doc_MD.c.doc_fio).label('Врач МД'),
             (t_toxic_cases_errors.c.error).label('Ошибка'),
         ]).select_from(j).where(
-            t_toxic_cases_errors.org_id.in_(ORG)
+            t_toxic_cases_errors.c.org_id.in_(ORG)
         )
 
         res = await database.fetch_all(query)
