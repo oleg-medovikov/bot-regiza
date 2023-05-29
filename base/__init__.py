@@ -5,6 +5,7 @@ from .dict_mkb import t_dict_mkb
 from .dict_doctor import t_dict_doctor
 from .toxic_cases import t_toxic_cases
 from .dict_obser import t_dict_obser
+from .toxic_case_error import t_toxic_cases_errors
 
 metadata.create_all(engine)
 
@@ -18,4 +19,5 @@ __all__ = [
     't_dict_doctor',
     't_toxic_cases',
     't_dict_obser',
+    't_toxic_cases_errors'
 ]

@@ -2,12 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime, date
 from base import database, t_toxic_cases, t_dict_doctor, \
     t_dict_mkb, t_dict_obser, t_dict_orgs
-from sqlalchemy import desc, select, case, and_, func
+from sqlalchemy import desc, select, case, and_
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
 
 from pandas import DataFrame
-from func import month_name
 
 
 class ToxicCase (BaseModel):
