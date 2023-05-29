@@ -2,7 +2,7 @@ from pandas import DataFrame
 from datetime import datetime
 
 from clas import ToxicCase, DictObser, Organization, \
-    MKB, Doctor
+    MKB, Doctor, ToxicCaseError
 
 
 def check_biz_key(KEY: str, DICT: dict) -> dict:
@@ -92,6 +92,22 @@ async def check_distric(VALUE: str, DICT: dict) -> dict:
     return DICT
 
 
+async def add_error(DICT: dict, ERROR: str):
+    "записываем как ошибку в таблицу ошибок"
+    TCE = ToxicCaseError(**{
+        'case_biz_key':   DICT['case_biz_key'],
+        'org_id':         DICT['org_id'],
+        'history_number': DICT['history_number'],
+        'mkb_id':         DICT['mkb_id'],
+        'diagnoz_date':   DICT['diagnoz_date'],
+        'doc_smo':        DICT['doc_smo'],
+        'doc_md':         DICT['doc_md'],
+        'error':          ERROR,
+
+    })
+    await TCE.add()
+
+
 async def prepare_toxic_cases(DF: DataFrame) -> list:
     "Превращаем таблицу данных в список ToxicCase"
     LIST = []
@@ -106,6 +122,7 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT = await check_org_id(row['medical_help_name'], DICT)
         if DICT['critical_error']:
             # если неправильный ключ или организация, то можно не продолжать
+            # и не нужно сохранять в ошибку
             continue
 
         # Простые вещи:
@@ -129,11 +146,14 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
             DICT['o_1104'] = datetime.strptime(row['1104'], '%d.%m.%Y')
             DICT['o_1105'] = datetime.strptime(row['1105'], '%d.%m.%Y')
         except TypeError:
+            await add_error(DICT, 'одна из дат 303, 1104, 1105 пустая')
             continue
         except ValueError:
+            await add_error(DICT, 'даты 303, 1104, 1105 неверного формата')
             continue
         DICT = check_dates(DICT)
         if DICT['critical_error']:
+            await add_error(DICT, DICT['errors'])
             continue
         # Проверка ключей словарей
         LIST_OBSER = [

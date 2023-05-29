@@ -4,6 +4,7 @@ from .Organization import Organization
 from .Doctor import Doctor
 from .ToxicCase import ToxicCase
 from .DictObser import DictObser
+from .ToxicCaseError import ToxicCaseError
 
 __all__ = [
     'User',
@@ -12,4 +13,5 @@ __all__ = [
     'Doctor',
     'ToxicCase',
     'DictObser',
+    'ToxicCaseError',
 ]

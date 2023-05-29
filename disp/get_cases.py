@@ -1,9 +1,8 @@
 from .dispetcher import dp
 from aiogram import types
-from datetime import datetime
 
 from func import delete_message, toxic_get_cases, prepare_toxic_cases
-from clas import User, Organization
+from clas import User, Organization, ToxicCaseError
 
 
 @dp.message_handler(commands=['get_cases'])
@@ -34,6 +33,7 @@ async def get_cases(message: types.Message):
         except Exception as e:
             mess += str(e)
         else:
+            await ToxicCaseError.delete(TC.case_biz_key)
             count += 1
     mess += f'Обработано случаев: {count}'
 

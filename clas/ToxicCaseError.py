@@ -39,10 +39,10 @@ class ToxicCaseError (BaseModel):
     @staticmethod
     async def delete(CASE_BIZ_KEY: int):
         "удаляем ошибку если нормально загрузился в таблицу t_toxic_cases"
-        query = t_toxic_cases_errors.delete.where(
+        query = t_toxic_cases_errors.delete().where(
             t_toxic_cases_errors.c.case_biz_key == CASE_BIZ_KEY
         )
-        await database.excecute(query)
+        await database.execute(query)
 
     @staticmethod
     async def get_all(ORG: list) -> dict:

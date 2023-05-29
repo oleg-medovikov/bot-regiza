@@ -1,7 +1,7 @@
 from .base import metadata
 
 from sqlalchemy import Table, Column, SmallInteger, String, \
-    DateTime, Boolean, Date, BigInteger
+    DateTime, BigInteger
 
 t_toxic_cases_errors = Table(
     "toxic_cases_errors",
@@ -28,5 +28,5 @@ t_toxic_cases_errors = Table(
     Column('doc_md', SmallInteger),
 
     # описание ошибки
-    Column('error', SmallInteger),
+    Column('error', String),
 )
