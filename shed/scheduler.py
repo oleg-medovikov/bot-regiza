@@ -28,11 +28,15 @@ async def get_case_automatic():
     USER = await User.get(MASTER)
 
     try:
-        df = toxic_get_cases(START, END, ORGS)
+        df = toxic_get_cases(
+            START.strftime('%Y-%m-%d'),
+            END.strftime('%Y-%m-%d'),
+            ORGS
+        )
     except Exception as e:
         return bot_send_text(str(e), int(USER.u_id))
 
-    mess = f'Размер датафрейма {len(df)} \n\n'
+    mess = f'Размер датафрейма {len(df)} \n'
     count = 0
     for TC in await prepare_toxic_cases(df):
         try:
@@ -42,5 +46,5 @@ async def get_case_automatic():
         else:
             await ToxicCaseError.delete(TC.case_biz_key)
             count += 1
-    mess += f'\n обработано {count} случаев'
+    mess += f'обработано {count} случаев'
     return bot_send_text(mess, int(USER.u_id))
