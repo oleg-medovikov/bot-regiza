@@ -9,6 +9,7 @@ from conf import MASTER
 
 async def scheduler():
     # aioschedule.every(1).minutes.do(test_send)
+    # aioschedule.every(1).minutes.do(get_case_automatic)
     aioschedule.every(6).hours.do(get_case_automatic)
     while True:
         await aioschedule.run_pending()

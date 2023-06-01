@@ -36,17 +36,11 @@ def toxic_get_cases(START: str, END: str, ORGS: list) -> 'DataFrame':
         df['date_aff_first'],
         format='%Y-%m-%d %H:%M:%S'
         )
-    df['meddoc_creation_date'] = to_datetime(
-        df['meddoc_creation_date'],
-        format='%Y-%m-%d %H:%M:%S',
-        errors="coerce"
-        )
-
     # Сортируем по датам и удаляем дублирующиеся строки,
     # оставляя последнее изменение
-    df.sort_values(by=['date_aff_first', 'meddoc_creation_date'], inplace=True)
+    df.sort_values(by=['date_aff_first'], inplace=True)
     df.drop_duplicates(
-        subset=df.columns.drop('date_aff_first', 'meddoc_creation_date'),
+        subset=df.columns.drop('date_aff_first'),
         keep='last',
         inplace=True
         )
@@ -81,9 +75,11 @@ def toxic_get_cases(START: str, END: str, ORGS: list) -> 'DataFrame':
     # добавляем поля, если каких-то обсервов не хватает
     CASE_CODES = [
         '303', '1101', '1102', '1103',
-        '1104', '1105', '1106', '1108', '1109',
-        '1110', '1111', '1112', '1113',
-        '1115', '1117', '1119', '1123'
+        '1104', '1105', '1106', '1107',
+        '1108', '1109', '1110', '1111',
+        '1112', '1113', '1114', '1115',
+        '1116', '1117', '1118', '1119',
+        '1123'
         ]
 
     for CASE in CASE_CODES:
