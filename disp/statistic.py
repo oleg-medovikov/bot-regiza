@@ -11,6 +11,10 @@ MESS = """*Формируем файлы статистики и сводные 
         Количество поставленых токсикологических диагнозов
     за текущий год, в разрезе районов СПб и месяцев.
     /svod_toxic_district
+
+    *Количество случаев по месяцам*
+        Сколько организации отправили случаев в целом.
+    /stat_cases_count
        """.replace('_', '\\_')
 
 
@@ -30,6 +34,7 @@ async def statistic_panel(message: types.Message):
 
 DICT_XLSX = [
     'svod_toxic_district',
+    'stat_cases_count',
 ]
 
 
@@ -48,6 +53,7 @@ async def send_statistic_file(message: types.Message):
 
     JSON = {
         'svod_toxic_district': ToxicCase.svod_toxic_district(),
+        'stat_cases_count': ToxicCase.stat_cases_count()
     }.get(COMMAND)
 
     df = await JSON

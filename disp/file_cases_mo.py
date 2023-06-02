@@ -8,7 +8,7 @@ from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
 from func import delete_message, return_month, \
     write_styling_excel, month_name
-from clas import User, ToxicCase
+from clas import User, ToxicCase, Organization
 
 
 @dp.message_handler(commands=['file_get_toxic_cases'])
@@ -16,7 +16,7 @@ async def file_get_toxic_cases(message: types.Message):
     await delete_message(message)
 
     try:
-        USER = await User.get(message['from']['id'])
+        await User.get(message['from']['id'])
     except ValueError:
         return await message.answer(
             "вы неизвестный пользователь!",
@@ -46,9 +46,9 @@ async def process_simple_calendar(
 
         USER = await User.get(callback_query['from']['id'])
         if USER.role in ['admin', 'rpn']:
-            MO = 'all'
+            MO = await Organization.get_org_id_list()
         else:
-            MO = USER.org
+            MO = [USER.org]
         START, END = return_month(date)
 
         JSON = await ToxicCase.file_cases_mo(START, END, MO)

@@ -9,7 +9,7 @@ from conf import MASTER
 
 async def scheduler():
     # aioschedule.every(1).minutes.do(test_send)
-    # aioschedule.every(1).minutes.do(get_case_automatic)
+    # aioschedule.every(5).minutes.do(get_case_automatic)
     aioschedule.every(6).hours.do(get_case_automatic)
     while True:
         await aioschedule.run_pending()
@@ -24,7 +24,7 @@ async def test_send():
 async def get_case_automatic():
     # берем список актуальных организаций
     ORGS = await Organization.get_org_list()
-    START = datetime.now() - timedelta(days=5)
+    START = datetime.now() - timedelta(days=20)
     END = datetime.now() + timedelta(days=1)
     USER = await User.get(MASTER)
 

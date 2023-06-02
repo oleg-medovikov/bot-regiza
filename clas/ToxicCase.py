@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime, date
 from base import database, t_toxic_cases, t_dict_doctor, \
     t_dict_mkb, t_dict_obser, t_dict_orgs
-from sqlalchemy import desc, select, case, and_
+from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
 
@@ -76,66 +76,80 @@ class ToxicCase (BaseModel):
 
         j = t_toxic_cases.join(
             t_dict_orgs,
-            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id,
+            isouter=True
         ).join(
             t_dict_mkb,
-            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id
+            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id,
+            isouter=True
         ).join(
             t_doc_SMO,
-            t_toxic_cases.c.doc_smo == t_doc_SMO.c.doc_id
+            t_toxic_cases.c.doc_smo == t_doc_SMO.c.doc_id,
+            isouter=True
         ).join(
             t_doc_MD,
-            t_toxic_cases.c.doc_md == t_doc_MD.c.doc_id
+            t_toxic_cases.c.doc_md == t_doc_MD.c.doc_id,
+            isouter=True
         ).join(
             t_1101,
             and_(
                 t_toxic_cases.c.o_1101 == t_1101.c.nsi_key,
-                t_1101.c.obs_code == 1101)
+                t_1101.c.obs_code == 1101),
+            isouter=True
         ).join(
             t_1106,
             and_(
                 t_toxic_cases.c.o_1106 == t_1106.c.nsi_key,
-                t_1106.c.obs_code == 1106)
+                t_1106.c.obs_code == 1106),
+            isouter=True
         ).join(
             t_1108,
             and_(
                 t_toxic_cases.c.o_1108 == t_1108.c.nsi_key,
-                t_1108.c.obs_code == 1108)
+                t_1108.c.obs_code == 1108),
+            isouter=True
         ).join(
             t_1109,
             and_(
                 t_toxic_cases.c.o_1109 == t_1109.c.nsi_key,
-                t_1109.c.obs_code == 1109)
+                t_1109.c.obs_code == 1109),
+            isouter=True
         ).join(
             t_1110,
             and_(
                 t_toxic_cases.c.o_1110 == t_1110.c.nsi_key,
-                t_1110.c.obs_code == 1110)
+                t_1110.c.obs_code == 1110),
+            isouter=True
         ).join(
             t_1113,
             and_(
                 t_toxic_cases.c.o_1113 == t_1113.c.nsi_key,
-                t_1113.c.obs_code == 1113)
+                t_1113.c.obs_code == 1113),
+            isouter=True
         ).join(
             t_1115,
             and_(
                 t_toxic_cases.c.o_1115 == t_1115.c.nsi_key,
-                t_1115.c.obs_code == 1115)
+                t_1115.c.obs_code == 1115),
+            isouter=True
         ).join(
             t_1117,
             and_(
                 t_toxic_cases.c.o_1117 == t_1117.c.nsi_key,
-                t_1117.c.obs_code == 1117)
+                t_1117.c.obs_code == 1117),
+            isouter=True
         ).join(
             t_1119,
             and_(
                 t_toxic_cases.c.o_1119 == t_1119.c.nsi_key,
-                t_1119.c.obs_code == 1119)
+                t_1119.c.obs_code == 1119),
+            isouter=True
         ).join(
             t_1123,
             and_(
                 t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
-                t_1123.c.obs_code == 1123)
+                t_1123.c.obs_code == 1123),
+            isouter=True
         )
 
         query = select([
@@ -177,13 +191,10 @@ class ToxicCase (BaseModel):
             (t_1123.c.value).label('Район (1123)'),
             (t_toxic_cases.c.errors).label('Ошибки заполнения'),
             ]).order_by(desc(t_toxic_cases.c.o_303))\
-            .select_from(j).where(
-            t_toxic_cases.c.o_303.between(START, END)
-        )
-        if MO != 'all':
-            query = query.where(
-                t_toxic_cases.c.org_id == int(MO)
-            )
+            .select_from(j).where(and_(
+                t_toxic_cases.c.o_303.between(START, END),
+                t_toxic_cases.c.org_id.in_(MO)
+            ))
         res = await database.fetch_all(query)
         return [dict(r) for r in res]
 
@@ -283,3 +294,37 @@ class ToxicCase (BaseModel):
             ))
         res = await database.fetch_all(query)
         return [dict(r) for r in res]
+
+    @staticmethod
+    async def stat_cases_count():
+        "Сводный отчет по количеству случаев по месяцам"
+        t_1 = aliased(t_dict_obser)
+
+        j = t_toxic_cases.join(
+            t_1,
+            and_(
+                (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
+                t_1.c.obs_code == 1
+            ),
+        ).join(
+            t_dict_orgs,
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id
+        )
+
+        query = select([
+            (t_1.c.nsi_key).label('index'),
+            (t_1.c.value).label('Месяц'),
+            (t_dict_orgs.c.org_name).label('Организация'),
+            func.count(t_1.c.value).label('количество случаев'),
+        ]).group_by(
+            t_1.c.nsi_key,
+            t_1.c.value,
+            t_dict_orgs.c.org_name
+        ).select_from(j).where(
+            extract('year', t_toxic_cases.c.o_303) == datetime.now().year
+        )
+
+        res = await database.fetch_all(query)
+        df = DataFrame(data=[dict(r) for r in res])
+        del df['index']
+        return df
