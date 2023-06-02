@@ -21,7 +21,7 @@ async def file_get_errors(message: types.Message):
     if USER.role in ['admin', 'rpn']:
         ORG = await Organization.get_org_id_list()
     else:
-        ORG = USER.org
+        ORG = [USER.org]
 
     JSON = await ToxicCaseError.get_all(ORG)
 

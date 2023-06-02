@@ -9,7 +9,7 @@ from base import database, t_users
 class User (BaseModel):
     u_id:        int
     fio:         str
-    org:         str
+    org:         int
     role:        str
     date_update: datetime
 
