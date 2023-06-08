@@ -42,6 +42,15 @@ class ToxicCase (BaseModel):
     o_1123:          int
     errors:          str
 
+    @staticmethod
+    async def delete(CASE_BIZ_KEY):
+        # просто удаляем строчку, так как case_biz_key отменен
+        query = t_toxic_cases.delete().where(
+            t_toxic_cases.c.case_biz_key == int(CASE_BIZ_KEY)
+        )
+
+        await database.execute(query)
+
     async def add(self):
         # проверяем наличие по case_biz_key
         query = t_toxic_cases.select(

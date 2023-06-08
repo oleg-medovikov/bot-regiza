@@ -2,7 +2,7 @@ from .dispetcher import dp
 from aiogram import types
 
 from func import delete_message, toxic_get_cases, prepare_toxic_cases
-from clas import User, Organization, ToxicCaseError
+from clas import User, Organization, ToxicCase, ToxicCaseError
 
 
 @dp.message_handler(commands=['get_cases'])
@@ -25,7 +25,19 @@ async def get_cases(message: types.Message):
         return await message.answer(str(e), parse_mode='Markdown')
 
     mess = f'Размер датафрейма {len(df)} \n\n'
+    df_is_canselled = df.loc[df['case_is_cancelled'] == '1']
 
+    count = 0
+    for case_biz_key in df_is_canselled['case_biz_key'].unique():
+        try:
+            await ToxicCase.delete(case_biz_key)
+        except Exception as e:
+            mess += str(e)
+        else:
+            count += 1
+    mess += f'удалено отмененных случаев: {count}'
+
+    df = df.loc[df['case_is_cancelled'] == '0']
     count = 0
     for TC in await prepare_toxic_cases(df):
         try:
