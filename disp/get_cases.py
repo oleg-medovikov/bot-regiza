@@ -6,7 +6,7 @@ from func import delete_message, toxic_get_cases, prepare_toxic_cases, \
     return_month, month_name
 from clas import User, Organization
 
-from aiogram_calendar import simple_cal_callback, SimpleCalendar
+from aiogram_calendar import dialog_cal_callback, DialogCalendar
 
 
 @dp.message_handler(commands=['get_cases'])
@@ -22,20 +22,20 @@ async def get_cases_ask_month(message: types.Message):
             )
     await message.answer(
         text="Выбор месяца:",
-        reply_markup=await SimpleCalendar().start_calendar(
+        reply_markup=await DialogCalendar().start_calendar(
             datetime.now().year,
             datetime.now().month
             )
         )
 
 
-@dp.callback_query_handler(simple_cal_callback.filter())
+@dp.callback_query_handler(dialog_cal_callback.filter())
 async def get_cases(
         callback_query: types.CallbackQuery,
         callback_data: dict):
     """Создание задания после выбора даты из календаря"""
 
-    selected, date = await SimpleCalendar().process_selection(
+    selected, date = await DialogCalendar().process_selection(
             callback_query,
             callback_data
     )

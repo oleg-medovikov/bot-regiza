@@ -166,6 +166,7 @@ class ToxicCase (BaseModel):
         query = select([
             (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
             (t_toxic_cases.c.case_biz_key).label('Идентификатор СМО'),
+            (t_toxic_cases.c.is_cancelled).label('Помечен, как отмененный'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases.c.history_number).label('Номер истории болезни'),
             (t_toxic_cases.c.age).label('Возраст'),
