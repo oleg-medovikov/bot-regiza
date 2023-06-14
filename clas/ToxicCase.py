@@ -5,6 +5,7 @@ from base import database, t_toxic_cases, t_dict_doctor, \
 from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
+from sqlalchemy import Integer
 
 from pandas import DataFrame
 
@@ -294,6 +295,7 @@ class ToxicCase (BaseModel):
             (t_toxic_cases.c.history_number).label('История болезни'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases.c.case_biz_key).label('case_biz_key'),
+            (t_toxic_cases.c.is_cancelled).label('Помечен, как отмененный'),
             (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
             (t_1123.c.value).label('Район'),
             (t_dict_mkb.c.mkb_code).label('Диагноз'),
@@ -328,7 +330,19 @@ class ToxicCase (BaseModel):
             (t_1.c.value).label('Месяц'),
             (t_dict_orgs.c.org_name).label('Организация'),
             func.count(t_1.c.value).label('количество случаев'),
-        ]).group_by(
+            func.sum(
+                case(
+                    (t_toxic_cases.c.is_cancelled, func.cast(1, Integer)),
+                    else_=func.cast(0, Integer)
+                    )
+                ).label('Помечен, как отмененный'),
+            func.sum(
+                case(
+                    (t_toxic_cases.c.is_cancelled, func.cast(0, Integer)),
+                    else_=func.cast(1, Integer)
+                    )
+                ).label('актуальные случаи')
+         ]).group_by(
             t_1.c.nsi_key,
             t_1.c.value,
             t_dict_orgs.c.org_name
