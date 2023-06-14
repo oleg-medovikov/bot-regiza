@@ -23,8 +23,7 @@ async def get_cases_ask_month(message: types.Message):
     await message.answer(
         text="Выбор месяца:",
         reply_markup=await DialogCalendar().start_calendar(
-            datetime.now().year,
-            datetime.now().month
+            datetime.now().year
             )
         )
 
