@@ -11,6 +11,7 @@ from pandas import DataFrame
 
 class ToxicCase (BaseModel):
     case_biz_key:    int
+    is_cancelled:    bool
     org_id:          int
     history_number:  str
     sex:             bool
@@ -45,6 +46,7 @@ class ToxicCase (BaseModel):
     @staticmethod
     async def delete(CASE_BIZ_KEY):
         # просто удаляем строчку, так как case_biz_key отменен
+        # устаревшая функция, я решил более не удалять
         query = t_toxic_cases.delete().where(
             t_toxic_cases.c.case_biz_key == int(CASE_BIZ_KEY)
         )

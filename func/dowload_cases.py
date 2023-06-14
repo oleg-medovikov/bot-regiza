@@ -39,17 +39,17 @@ def toxic_get_cases(START: str, END: str, ORGS: list) -> 'DataFrame':
     # Сортируем по датам и удаляем дублирующиеся строки,
     # оставляя последнее изменение
     df.sort_values(by=['date_aff_first'], inplace=True)
-    df.drop_duplicates(
-        subset=df.columns.drop('date_aff_first'),
-        keep='last',
-        inplace=True
-        )
+    # df.drop_duplicates(
+    #    subset=df.columns.drop('date_aff_first'),
+    #    keep='last',
+    #    inplace=True
+    #    )
     # исправляем индексы
     df.index = range(len(df))
 
     # делаем разворот таблицы для показателей
     obs = df.pivot_table(
-        index=['case_biz_key'],
+        index=['case_biz_key', 'case_is_cancelled'],
         columns=['observation_code'],
         values=['observation_value'],
         aggfunc='first'
@@ -62,13 +62,13 @@ def toxic_get_cases(START: str, END: str, ORGS: list) -> 'DataFrame':
     del DF['observation_value']
 
     DF.drop_duplicates(
-        subset='case_biz_key',
+        subset=['case_biz_key', 'case_is_cancelled'],
         keep='last',
         inplace=True
     )
 
     # соединяем уникальные истории с показателями
-    DF = DF.merge(obs, how='left', on=['case_biz_key'])
+    DF = DF.merge(obs, how='left', on=['case_biz_key', 'case_is_cancelled'])
     # обновляем индексы
     DF.index = range(len(DF))
 

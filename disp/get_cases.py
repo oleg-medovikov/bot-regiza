@@ -1,12 +1,16 @@
 from .dispetcher import dp
 from aiogram import types
+from datetime import datetime
 
-from func import delete_message, toxic_get_cases, prepare_toxic_cases
-from clas import User, Organization, ToxicCase, ToxicCaseError
+from func import delete_message, toxic_get_cases, prepare_toxic_cases, \
+    return_month, month_name
+from clas import User, Organization
+
+from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
 
 @dp.message_handler(commands=['get_cases'])
-async def get_cases(message: types.Message):
+async def get_cases_ask_month(message: types.Message):
     await delete_message(message)
 
     try:
@@ -16,37 +20,64 @@ async def get_cases(message: types.Message):
             "вы не являетесь админом",
             parse_mode='html'
             )
-    # берем список актуальных организаций
-    ORGS = await Organization.get_org_list()
+    await message.answer(
+        text="Выбор месяца:",
+        reply_markup=await SimpleCalendar().start_calendar(
+            datetime.now().year,
+            datetime.now().month
+            )
+        )
 
-    try:
-        df = toxic_get_cases('2023-01-01', '2023-06-01', ORGS)
-    except Exception as e:
-        return await message.answer(str(e), parse_mode='Markdown')
 
-    mess = f'Размер датафрейма {len(df)} \n\n'
-    df_is_canselled = df.loc[df['case_is_cancelled'] == '1']
+@dp.callback_query_handler(simple_cal_callback.filter())
+async def get_cases(
+        callback_query: types.CallbackQuery,
+        callback_data: dict):
+    """Создание задания после выбора даты из календаря"""
 
-    count = 0
-    for case_biz_key in df_is_canselled['case_biz_key'].unique():
+    selected, date = await SimpleCalendar().process_selection(
+            callback_query,
+            callback_data
+    )
+
+    if selected:
+        await delete_message(callback_query.message)
+
+        # берем список актуальных организаций
+        ORGS = await Organization.get_org_list()
+        START, END = return_month(date)
+
         try:
-            await ToxicCase.delete(case_biz_key)
+            df = toxic_get_cases(
+                START.strftime('%Y-%m-%d'),
+                END.strftime('%Y-%m-%d'),
+                ORGS
+            )
         except Exception as e:
-            mess += str(e)
-        else:
-            count += 1
-    mess += f'удалено отмененных случаев: {count}'
+            return await callback_query.message.answer(
+                str(e),
+                parse_mode='Markdown'
+            )
 
-    df = df.loc[df['case_is_cancelled'] == '0']
-    count = 0
-    for TC in await prepare_toxic_cases(df):
-        try:
-            await TC.add()
-        except Exception as e:
-            mess += str(e)
-        else:
-            await ToxicCaseError.delete(TC.case_biz_key)
-            count += 1
-    mess += f'Обработано случаев: {count}'
+        mess = f'Размер датафрейма за месяц {month_name(date.month)} {len(df)}'
+        mess += '\n\n'
 
-    return await message.answer(mess, parse_mode='Markdown')
+        count_add = 0
+        count_cancel = 0
+
+        for TC in await prepare_toxic_cases(df):
+            try:
+                await TC.add()
+            except Exception as e:
+                mess += str(e)
+            else:
+                # await ToxicCaseError.delete(TC.case_biz_key)
+                if TC.is_cancelled:
+                    count_cancel += 1
+                else:
+                    count_add += 1
+
+        mess += f'Добавлено случаев: {count_add}\n'
+        mess += f'Отмененные случаи: {count_cancel}\n'
+
+        return await callback_query.message.answer(mess, parse_mode='Markdown')

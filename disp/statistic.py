@@ -61,6 +61,6 @@ async def send_statistic_file(message: types.Message):
     SHETNAME = 'def'
 
     write_styling_excel(FILENAME, df, SHETNAME, True)
-    #df.to_excel(FILENAME)
+    # df.to_excel(FILENAME)
     await message.answer_document(open(FILENAME, 'rb'))
     os.remove(FILENAME)

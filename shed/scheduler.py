@@ -37,30 +37,27 @@ async def get_case_automatic():
     except Exception as e:
         return bot_send_text(str(e), int(USER.u_id))
 
-    mess = f'Размер датафрейма {len(df)} \n'
+    mess = f'Загружаю случаи с {START.strftime("%Y-%m-%d")}'
+    mess += f' по {END.strftime("%Y-%m-%d")}'
+    mess += f'Размер датафрейма {len(df)}'
+    mess += '\n\n'
 
-    df_is_canselled = df.loc[df['case_is_cancelled'] == '1']
+    count_add = 0
+    count_cancel = 0
 
-    count = 0
-    for case_biz_key in df_is_canselled['case_biz_key'].unique():
-        try:
-            await ToxicCase.delete(case_biz_key)
-        except Exception as e:
-            mess += str(e)
-        else:
-            count += 1
-    mess += f'удалено отмененных случаев: {count}\n'
-
-    df = df.loc[df['case_is_cancelled'] == '0']
-    count = 0
     for TC in await prepare_toxic_cases(df):
         try:
             await TC.add()
         except Exception as e:
             mess += str(e)
         else:
-            await ToxicCaseError.delete(TC.case_biz_key)
-            count += 1
+            # await ToxicCaseError.delete(TC.case_biz_key)
+            if TC.is_cancelled:
+                count_cancel += 1
+            else:
+                count_add += 1
 
-    mess += f'обработано {count} случаев\n'
+    mess += f'Добавлено случаев: {count_add}\n'
+    mess += f'Отмененные случаи: {count_cancel}\n'
+
     return bot_send_text(mess, int(USER.u_id))

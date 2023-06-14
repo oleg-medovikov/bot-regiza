@@ -9,6 +9,9 @@ t_toxic_cases = Table(
     # идентификатор случая лечения пациента
     Column('case_biz_key', BigInteger, primary_key=True),
 
+    # статус идентификатора, был ли он оменен
+    Column('is_cancelled', Boolean),
+
     # идентификатор организации dict_orgs
     Column('org_id', SmallInteger),
 
