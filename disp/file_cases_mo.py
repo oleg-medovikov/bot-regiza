@@ -7,7 +7,7 @@ from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
 
 from func import delete_message, return_month, \
-    write_styling_excel, month_name
+    write_styling_excel, month_name, create_xml
 from clas import User, ToxicCase, Organization
 
 
@@ -66,33 +66,16 @@ async def process_simple_calendar(
         await callback_query.message.answer_document(open(FILENAME, 'rb'))
         os.remove(FILENAME)
 
+        # Создаем файлик XML
+        if USER.role in ['admin', 'rpn']:
+            # за месяц
+            JSON = await ToxicCase.file_cases_xml(START, END)
+            NAME = f'Случаи_за_{month_name(date.month)}_{date.year}'
+            FILE = create_xml(JSON, NAME)
+            await callback_query.message.answer_document(open(FILE, 'rb'))
 
-@dp.message_handler(commands=['file_cases_mo'])
-async def file_cases_mo(message: types.Message):
-    await delete_message(message)
-
-    try:
-        USER = await User.get(message['from']['id'])
-    except ValueError:
-        return await message.answer(
-            "вы неизвестный пользователь!",
-            parse_mode='html'
-            )
-
-    if USER.role == 'admin':
-        MO = 'all'
-    else:
-        MO = USER.org
-
-    START, END = return_month(datetime.now())
-
-    JSON = await ToxicCase.file_cases_mo(START, END, MO)
-
-    df = DataFrame(data=JSON)
-    df = df.fillna('')
-    FILENAME = f'/tmp/toxic_case_{str(START)}_{str(END)}.xlsx'
-    SHETNAME = 'def'
-
-    write_styling_excel(FILENAME, df, SHETNAME)
-    await message.answer_document(open(FILENAME, 'rb'))
-    os.remove(FILENAME)
+            # за день
+            JSON = await ToxicCase.file_cases_xml(date, date)
+            NAME = f'Случаи_за_{date.strftime("%d_%m_%Y")}'
+            FILE = create_xml(JSON, NAME)
+            await callback_query.message.answer_document(open(FILE, 'rb'))

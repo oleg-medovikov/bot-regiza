@@ -6,6 +6,7 @@ from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
 from sqlalchemy import Integer
+from sqlalchemy.sql.expression import false
 
 from pandas import DataFrame
 
@@ -167,7 +168,10 @@ class ToxicCase (BaseModel):
         query = select([
             (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
             (t_toxic_cases.c.case_biz_key).label('Идентификатор СМО'),
-            (t_toxic_cases.c.is_cancelled).label('Помечен, как отмененный'),
+            (case(
+                (t_toxic_cases.c.is_cancelled, 'отменен'),
+                else_='актуальный',
+             )).label('Статус СМО'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases.c.history_number).label('Номер истории болезни'),
             (t_toxic_cases.c.age).label('Возраст'),
@@ -354,3 +358,130 @@ class ToxicCase (BaseModel):
         df = DataFrame(data=[dict(r) for r in res])
         del df['index']
         return df
+
+    @staticmethod
+    async def file_cases_xml(START: str, END: str) -> list:
+        "вытаскиваем данные для РПН, импорт в программу"
+        t_1101 = aliased(t_dict_obser)
+        t_1106 = aliased(t_dict_obser)
+        t_1108 = aliased(t_dict_obser)
+        t_1109 = aliased(t_dict_obser)
+        t_1110 = aliased(t_dict_obser)
+        t_1113 = aliased(t_dict_obser)
+        t_1115 = aliased(t_dict_obser)
+        t_1117 = aliased(t_dict_obser)
+        t_1119 = aliased(t_dict_obser)
+        t_1123 = aliased(t_dict_obser)
+
+        j = t_toxic_cases.join(
+            t_dict_orgs,
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id,
+            isouter=True
+        ).join(
+            t_dict_mkb,
+            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id,
+            isouter=True
+        ).join(
+            t_1101,
+            and_(
+                t_toxic_cases.c.o_1101 == t_1101.c.nsi_key,
+                t_1101.c.obs_code == 1101),
+            isouter=True
+        ).join(
+            t_1106,
+            and_(
+                t_toxic_cases.c.o_1106 == t_1106.c.nsi_key,
+                t_1106.c.obs_code == 1106),
+            isouter=True
+        ).join(
+            t_1108,
+            and_(
+                t_toxic_cases.c.o_1108 == t_1108.c.nsi_key,
+                t_1108.c.obs_code == 1108),
+            isouter=True
+        ).join(
+            t_1109,
+            and_(
+                t_toxic_cases.c.o_1109 == t_1109.c.nsi_key,
+                t_1109.c.obs_code == 1109),
+            isouter=True
+        ).join(
+            t_1110,
+            and_(
+                t_toxic_cases.c.o_1110 == t_1110.c.nsi_key,
+                t_1110.c.obs_code == 1110),
+            isouter=True
+        ).join(
+            t_1113,
+            and_(
+                t_toxic_cases.c.o_1113 == t_1113.c.nsi_key,
+                t_1113.c.obs_code == 1113),
+            isouter=True
+        ).join(
+            t_1115,
+            and_(
+                t_toxic_cases.c.o_1115 == t_1115.c.nsi_key,
+                t_1115.c.obs_code == 1115),
+            isouter=True
+        ).join(
+            t_1117,
+            and_(
+                t_toxic_cases.c.o_1117 == t_1117.c.nsi_key,
+                t_1117.c.obs_code == 1117),
+            isouter=True
+        ).join(
+            t_1119,
+            and_(
+                t_toxic_cases.c.o_1119 == t_1119.c.nsi_key,
+                t_1119.c.obs_code == 1119),
+            isouter=True
+        ).join(
+            t_1123,
+            and_(
+                t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
+                t_1123.c.obs_code == 1123),
+            isouter=True
+        )
+
+        query = select([
+            t_toxic_cases.c.o_303,
+            t_toxic_cases.c.case_biz_key,
+            t_dict_orgs.c.org_name,
+            t_toxic_cases.c.history_number,
+            t_toxic_cases.c.age,
+            (case((t_toxic_cases.c.sex, '100'), else_='200')).label('sex'),
+            t_dict_mkb.c.mkb_rpn,
+            t_toxic_cases.c.diagnoz_date,  # лишнее?
+            (t_1101.c.rpn_key).label('o_1101'),
+            t_toxic_cases.c.o_1102,
+            t_toxic_cases.c.o_1103,
+            t_toxic_cases.c.o_1104,
+            t_toxic_cases.c.o_1105,
+            (t_1106.c.rpn_key).label('o_1106'),
+            t_toxic_cases.c.o_1107,
+            (t_1108.c.rpn_key).label('o_1108'),
+            (t_1109.c.rpn_key).label('o_1109'),
+            (t_1110.c.rpn_key).label('o_1110'),
+            t_toxic_cases.c.o_1111,
+            (case(
+                (t_toxic_cases.c.o_1112 == -1, None),
+                else_=t_toxic_cases.c.o_1112,
+            )).label('o_1112'),
+            (t_1113.c.rpn_key).label('o_1113'),
+            (case(
+                (t_toxic_cases.c.o_1114 < 0, None),
+                else_=t_toxic_cases.c.o_1114
+            )).label('o_1114'),
+            (t_1115.c.rpn_key).label('o_1115'),
+            t_toxic_cases.c.o_1116,
+            (t_1117.c.rpn_key).label('o_1117'),
+            t_toxic_cases.c.o_1118,
+            (t_1119.c.rpn_key).label('o_1119'),
+            (t_1123.c.rpn_key).label('o_1123'),
+            ]).order_by(desc(t_toxic_cases.c.o_303))\
+            .select_from(j).where(and_(
+                t_toxic_cases.c.o_303.between(START, END),
+                t_toxic_cases.c.is_cancelled == false()
+            ))
+        res = await database.fetch_all(query)
+        return [dict(r) for r in res]
