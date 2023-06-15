@@ -327,21 +327,21 @@ class ToxicCase (BaseModel):
 
         query = select([
             (t_1.c.nsi_key).label('index'),
-            (t_1.c.value).label('Месяц'),
+            (t_1.c.value).label('Месяц 303'),
             (t_dict_orgs.c.org_name).label('Организация'),
-            func.count(t_1.c.value).label('количество случаев'),
+            func.count(t_1.c.value).label('Количество случаев'),
             func.sum(
                 case(
                     (t_toxic_cases.c.is_cancelled, func.cast(1, Integer)),
                     else_=func.cast(0, Integer)
                     )
-                ).label('Помечен, как отмененный'),
+                ).label('Помечен как отмененный'),
             func.sum(
                 case(
                     (t_toxic_cases.c.is_cancelled, func.cast(0, Integer)),
                     else_=func.cast(1, Integer)
                     )
-                ).label('актуальные случаи')
+                ).label('Актуальные случаи')
          ]).group_by(
             t_1.c.nsi_key,
             t_1.c.value,
