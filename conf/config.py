@@ -10,3 +10,4 @@ REGIZ_URL = config('REGIZ_URL', cast=str)
 REGIZ_TOKEN = config('REGIZ_TOKEN', cast=str)
 
 MASTER = config('MASTER', cast=int)
+PROXY_URL = config('PROXY_URL', cast=str)
