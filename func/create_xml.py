@@ -138,10 +138,7 @@ def create_xml(JSON: list, NAME: str) -> str:
     for row in JSON:
         STRING += generate_row(row)
 
-        STRING += """
-    </data>
-    </dataset>
-    </package>"""
+    STRING += "\n</data>\n</dataset>\n</package>"
 
     FILE = f'/tmp/{NAME}.xml'
 
