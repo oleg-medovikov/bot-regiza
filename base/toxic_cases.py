@@ -21,8 +21,8 @@ t_toxic_cases = Table(
     # пол пациента
     Column('sex', Boolean),
 
-    # возраст пациента
-    Column('age', SmallInteger),
+    # возраст пациента RPN код
+    Column('age', Integer),
 
     # диагноз МКБ dict_mkb
     Column('mkb_id', SmallInteger),

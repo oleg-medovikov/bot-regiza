@@ -6,7 +6,7 @@ from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
 from sqlalchemy import Integer
-from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import false, cast
 
 from pandas import DataFrame
 
@@ -77,6 +77,7 @@ class ToxicCase (BaseModel):
         t_doc_SMO = aliased(t_dict_doctor)
         t_doc_MD = aliased(t_dict_doctor)
         t_1101 = aliased(t_dict_obser)
+        t_2 = aliased(t_dict_obser)
         t_1106 = aliased(t_dict_obser)
         t_1108 = aliased(t_dict_obser)
         t_1109 = aliased(t_dict_obser)
@@ -108,6 +109,12 @@ class ToxicCase (BaseModel):
             and_(
                 t_toxic_cases.c.o_1101 == t_1101.c.nsi_key,
                 t_1101.c.obs_code == 1101),
+            isouter=True
+        ).join(
+            t_2,
+            and_(
+                t_toxic_cases.c.age == cast(t_2.c.rpn_key, Integer),
+                t_2.c.obs_code == 2),
             isouter=True
         ).join(
             t_1106,
@@ -174,7 +181,7 @@ class ToxicCase (BaseModel):
              )).label('Статус СМО'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases.c.history_number).label('Номер истории болезни'),
-            (t_toxic_cases.c.age).label('Возраст'),
+            (t_2.c.value).label('Возраст'),
             (case((t_toxic_cases.c.sex, 'М'), else_='Ж')).label('Пол'),
             (t_dict_mkb.c.mkb_code).label('Диагноз'),
             (t_doc_SMO.c.doc_fio).label('Врач СМО'),
@@ -481,7 +488,8 @@ class ToxicCase (BaseModel):
             ]).order_by(desc(t_toxic_cases.c.o_303))\
             .select_from(j).where(and_(
                 t_toxic_cases.c.o_303.between(START, END),
-                t_toxic_cases.c.is_cancelled == false()
+                t_toxic_cases.c.is_cancelled == false(),
+                t_1123.c.rpn_key.like('40%')
             ))
         res = await database.fetch_all(query)
         return [dict(r) for r in res]

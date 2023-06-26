@@ -99,9 +99,9 @@ def generate_row(row: dict) -> str:
     LIST = (
         '\n   <r>',
         '\n      <v f="2">', row['history_number'], '</v>',  # номер ИБ
-        '\n      <v f="3">***</v>',  # вместо ФИО звездочки
-        '\n      <v f="4">', row['sex'],  '</v>',  # пол
-        '\n      <v f="5">', row['age'],  '0000</v>',  # возраст
+        '\n      <v f="3">', row['case_biz_key'], '</v>',  # вместо ФИО
+        '\n      <v f="4">', row['sex'], '</v>',  # пол
+        '\n      <v f="5">', row['age'], '</v>',  # возраст
         '\n      <v f="6">', row['o_1119'], '</v>',
         '\n      <v f="7">', row['o_1123'], '</v>',
         '\n      <v f="8"></v>',
@@ -109,7 +109,7 @@ def generate_row(row: dict) -> str:
         '\n      <v f="10">', row['o_1103'], '</v>',
         '\n      <v f="11">', row['o_1104'].strftime('%Y%m%d'), '</v>',
         '\n      <v f="12">', row['o_1105'].strftime('%Y%m%d'), '</v>',
-        '\n      <v f="13">', row['diagnoz_date'].strftime('%Y%m%d'), '</v>',
+        '\n      <v f="13">', row['o_303'].strftime('%Y%m%d'), '</v>',
         '\n      <v f="14">', row['mkb_rpn'], '</v>',
         '\n      <v f="15">', row['o_1108'], '</v>',
         '\n      <v f="16">', row['o_1109'], '</v>',
@@ -136,6 +136,9 @@ def create_xml(JSON: list, NAME: str) -> str:
 
     STRING = XML
     for row in JSON:
+        for k, v in row.items():
+            if row[k] is None or row[k] == '-1':
+                row[k] = ''
         STRING += generate_row(row)
 
     STRING += "\n</data>\n</dataset>\n</package>"

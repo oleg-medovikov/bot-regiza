@@ -10,6 +10,7 @@ from .prepare_toxic_cases import prepare_toxic_cases
 from .return_month import return_month
 from .month_name import month_name
 from .create_xml import create_xml
+from .get_rpn_age import get_rpn_age
 
 __all__ = [
     'hello_message',
@@ -25,4 +26,5 @@ __all__ = [
     'return_month',
     'month_name',
     'create_xml',
+    'get_rpn_age',
 ]

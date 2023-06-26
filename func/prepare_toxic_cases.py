@@ -4,6 +4,8 @@ from datetime import datetime
 from clas import ToxicCase, DictObser, Organization, \
     MKB, Doctor, ToxicCaseError
 
+from .get_rpn_age import get_rpn_age
+
 
 def check_biz_key(KEY: str, DICT: dict) -> dict:
     try:
@@ -130,7 +132,6 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['history_number'] = row['history_number']
         DICT['is_cancelled'] = row['case_is_cancelled']
         DICT['sex'] = True if row['gender'] == "male" else False
-        DICT['age'] = int(row['age'])
         DICT['mkb_id'] = await MKB.get_id(row['diagnosis'])
         DICT['diagnoz_date'] = row['date_aff_first']
         DICT['doc_smo'] = await Doctor.id(row['smo_fio'])
@@ -159,6 +160,10 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         if DICT['critical_error']:
             await add_error(DICT, DICT['errors'])
             continue
+
+        # расчитываем возраст
+        DICT['age'] = get_rpn_age(row['case_patient_birthdate'], DICT['o_303'])
+
         # Проверка ключей словарей
         LIST_OBSER = [
             1101, 1106, 1108, 1109, 1110, 1112, 1113, 1114, 1115, 1117, 1119
