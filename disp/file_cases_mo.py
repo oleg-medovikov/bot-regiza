@@ -8,7 +8,7 @@ from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
 from func import delete_message, return_month, \
     write_styling_excel, month_name, create_xml
-from clas import User, ToxicCase, Organization
+from clas import User, ToxicCase, Organization, Log
 
 
 @dp.message_handler(commands=['file_get_toxic_cases'])
@@ -18,6 +18,7 @@ async def file_get_toxic_cases(message: types.Message):
     try:
         await User.get(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 2)
         return await message.answer(
             "вы неизвестный пользователь!",
             parse_mode='html'
@@ -65,6 +66,7 @@ async def process_simple_calendar(
         write_styling_excel(FILENAME, df, SHETNAME)
         await callback_query.message.answer_document(open(FILENAME, 'rb'))
         os.remove(FILENAME)
+        await Log.add(USER.u_id, 21)
 
         # Создаем файлик XML
         if USER.role in ['admin', 'rpn']:

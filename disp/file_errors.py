@@ -4,7 +4,7 @@ import os
 from pandas import DataFrame
 
 from func import delete_message, write_styling_excel
-from clas import User, ToxicCaseError, Organization
+from clas import User, ToxicCaseError, Organization, Log
 
 
 @dp.message_handler(commands=['get_errors'])
@@ -14,6 +14,7 @@ async def file_get_errors(message: types.Message):
     try:
         USER = await User.get(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 2)
         return await message.answer(
             "вы неизвестный пользователь!",
             parse_mode='html'
@@ -36,3 +37,4 @@ async def file_get_errors(message: types.Message):
     write_styling_excel(FILENAME, df, SHETNAME)
     await message.answer_document(open(FILENAME, 'rb'))
     os.remove(FILENAME)
+    await Log.add(message['from']['id'], 22)

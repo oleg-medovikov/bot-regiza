@@ -2,7 +2,7 @@ from .dispetcher import dp
 from aiogram import types
 from aiogram.dispatcher.filters import Text
 
-from clas import User
+from clas import User, Log
 from func import delete_message
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -14,6 +14,7 @@ async def send_welcome(message: types.Message):
     try:
         USER = await User.get(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 2)
         return await message.answer(
             f"неизвестный юзер {message['from']['id']}",
             parse_mode='html'
@@ -48,6 +49,7 @@ async def send_manual(query: types.CallbackQuery):
         callback_data='no_send_manual'
     ))
     await query.message.edit_reply_markup(reply_markup=kb_hello)
+    await Log.add(query.message['from']['id'], 26)
     return await query.message.answer('Серьезно?')
 
 
@@ -63,4 +65,5 @@ async def no_send_manual(query: types.CallbackQuery):
     ))
 
     await query.message.edit_reply_markup(reply_markup=kb_hello)
+    await Log.add(query.message['from']['id'], 27)
     return await query.message.answer('Ну и слава богу.')

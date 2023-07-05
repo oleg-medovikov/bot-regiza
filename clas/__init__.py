@@ -5,6 +5,7 @@ from .Doctor import Doctor
 from .ToxicCase import ToxicCase
 from .DictObser import DictObser
 from .ToxicCaseError import ToxicCaseError
+from .Log import Log
 
 __all__ = [
     'User',
@@ -14,4 +15,5 @@ __all__ = [
     'ToxicCase',
     'DictObser',
     'ToxicCaseError',
+    'Log',
 ]

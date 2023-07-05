@@ -26,5 +26,7 @@ if __name__ == '__main__':
     while True:
         try:
             asyncio.run(main())
+        except KeyboardInterrupt:
+            break
         except:
             continue

@@ -2,7 +2,7 @@ from .dispetcher import dp
 from aiogram import types
 import os
 
-from clas import User, ToxicCase
+from clas import User, ToxicCase, Log
 from func import delete_message, write_styling_excel
 
 MESS = """*Формируем файлы статистики и сводные отчеты*
@@ -25,6 +25,7 @@ async def statistic_panel(message: types.Message):
     try:
         await User.get(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 2)
         return await message.answer(
             "вы неизвестный пользователь",
             parse_mode='html'
@@ -32,19 +33,20 @@ async def statistic_panel(message: types.Message):
 
     return await message.answer(MESS, parse_mode='Markdown')
 
-DICT_XLSX = [
-    'svod_toxic_district',
-    'stat_cases_count',
-]
+DICT_XLSX = {
+    'svod_toxic_district': 41,
+    'stat_cases_count':    42,
+}
 
 
-@dp.message_handler(commands=DICT_XLSX)
+@dp.message_handler(commands=DICT_XLSX.keys())
 async def send_statistic_file(message: types.Message):
     await delete_message(message)
 
     try:
         await User.admin(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 2)
         return await message.answer(
             "вы неизвестный пользователь",
             parse_mode='html'
@@ -64,3 +66,4 @@ async def send_statistic_file(message: types.Message):
     # df.to_excel(FILENAME)
     await message.answer_document(open(FILENAME, 'rb'))
     os.remove(FILENAME)
+    await Log.add(message['from']['id'], DICT_XLSX.get(COMMAND))

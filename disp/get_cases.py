@@ -3,7 +3,7 @@ from aiogram import types
 from datetime import datetime, timedelta
 
 from func import delete_message, toxic_get_cases, prepare_toxic_cases
-from clas import User, Organization
+from clas import User, Organization, Log
 
 
 @dp.message_handler(commands=['get_cases'])
@@ -14,6 +14,7 @@ async def get_cases(message: types.Message):
     try:
         await User.admin(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 1)
         return await message.answer(
             "Вы не являетесь админом",
             parse_mode='html'
@@ -56,5 +57,5 @@ async def get_cases(message: types.Message):
 
     mess += f'Добавлено случаев: {count_add}\n'
     mess += f'Отмененные случаи: {count_cancel}\n'
-
+    await Log.add(message['from']['id'], 23)
     return await message.answer(mess, parse_mode='Markdown')

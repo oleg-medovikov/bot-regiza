@@ -3,7 +3,7 @@ from aiogram import types
 import os
 import pandas as pd
 
-from clas import User, MKB, Organization, DictObser
+from clas import User, MKB, Organization, DictObser, Log
 from func import delete_message, send_large_message
 
 NAMES = {
@@ -25,6 +25,7 @@ async def update_base(message: types.Message):
     try:
         await User.admin(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 1)
         return await message.answer(
             "вы не являетесь админом",
             parse_mode='html'
@@ -33,6 +34,7 @@ async def update_base(message: types.Message):
     FILE = message['document']
 
     if not FILE['file_name'] in NAMES.keys():
+        await Log.add(message['from']['id'], 3)
         return await message.answer('У файла неправильное имя')
 
     DESTINATION = '/tmp/' + FILE.file_unique_id + 'xlsx'
@@ -46,6 +48,7 @@ async def update_base(message: types.Message):
     try:
         df = pd.read_excel(DESTINATION, usecols=COLUMNS)
     except Exception as e:
+        await Log.add(message['from']['id'], 4)
         os.remove(DESTINATION)
         return await message.answer(str(e))
 
@@ -58,11 +61,11 @@ async def update_base(message: types.Message):
 
     list_ = df.to_dict('records')
 
-    MESS = {
-        'users':         User.update_all(list_),
-        'mkb':           MKB.update_all(list_),
-        'organizations': Organization.update_all(list_),
-        'dict_obser':    DictObser.update_all(list_),
+    MESS, ACTION = {
+        'users':         (User.update_all(list_), 61),
+        'mkb':           (MKB.update_all(list_), 62),
+        'organizations': (Organization.update_all(list_), 63),
+        'dict_obser':    (DictObser.update_all(list_), 64),
         }.get(FILE['file_name'][:-5])
 
     try:
@@ -72,3 +75,4 @@ async def update_base(message: types.Message):
 
     await send_large_message(message, MESS)
     os.remove(DESTINATION)
+    await Log.add(message['from']['id'], ACTION)

@@ -3,7 +3,7 @@ from aiogram import types
 from pandas import DataFrame
 import os
 
-from clas import User, MKB, Organization, DictObser
+from clas import User, MKB, Organization, DictObser, Log
 from func import delete_message, write_styling_excel
 
 MESS = """*Доступные команды для редактирования базы*
@@ -27,6 +27,7 @@ async def admin_panel(message: types.Message):
     try:
         await User.admin(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 1)
         return await message.answer(
             "вы не являетесь админом",
             parse_mode='html'
@@ -34,21 +35,22 @@ async def admin_panel(message: types.Message):
 
     return await message.answer(MESS, parse_mode='Markdown')
 
-DICT_XLSX = [
-    'get_users',
-    'get_mkb',
-    'get_organizations',
-    'get_dict_obser',
-]
+DICT_XLSX = {
+    'get_users':         11,
+    'get_mkb':           12,
+    'get_organizations': 13,
+    'get_dict_obser':    14,
+}
 
 
-@dp.message_handler(commands=DICT_XLSX)
+@dp.message_handler(commands=DICT_XLSX.keys())
 async def send_objects_file(message: types.Message):
     await delete_message(message)
 
     try:
         await User.admin(message['from']['id'])
     except ValueError:
+        await Log.add(message['from']['id'], 1)
         return await message.answer(
             "вы не являетесь админом",
             parse_mode='html'
@@ -70,3 +72,4 @@ async def send_objects_file(message: types.Message):
     write_styling_excel(FILENAME, df, SHETNAME)
     await message.answer_document(open(FILENAME, 'rb'))
     os.remove(FILENAME)
+    await Log.add(message['from']['id'], DICT_XLSX.get(COMMAND))
