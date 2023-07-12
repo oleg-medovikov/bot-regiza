@@ -38,7 +38,7 @@ async def get_cases(message: types.Message):
 
     mess = f'Размер датафрейма за месяц c {START.strftime("%Y-%m-%d")}'
     mess += f': {len(df)}'
-    mess += '\n\n'
+    mess += '\n'
 
     count_add = 0
     count_cancel = 0

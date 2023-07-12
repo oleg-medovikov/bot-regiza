@@ -19,6 +19,7 @@ class ToxicCase (BaseModel):
     sex:             bool
     age:             int
     mkb_id:          int
+    diadnoz_stage:   bool
     diagnoz_date:    datetime
     doc_smo:         int
     doc_md:          int
@@ -184,6 +185,10 @@ class ToxicCase (BaseModel):
             (t_2.c.value).label('Возраст'),
             (case((t_toxic_cases.c.sex, 'М'), else_='Ж')).label('Пол'),
             (t_dict_mkb.c.mkb_code).label('Диагноз'),
+            (case(
+                (t_toxic_cases.c.diadnoz_stage, 'Заключительный'),
+                else_='Другой',
+                )).label('Этап установления диагноза'),
             (t_doc_SMO.c.doc_fio).label('Врач СМО'),
             (t_doc_MD.c.doc_fio).label('Врач МД'),
             (t_toxic_cases.c.diagnoz_date).label('Дата отправки'),
@@ -350,7 +355,17 @@ class ToxicCase (BaseModel):
             func.sum(
                 case(
                     (t_toxic_cases.c.is_cancelled, func.cast(0, Integer)),
+                    (t_toxic_cases.c.diadnoz_stage, func.cast(0, Integer)),
                     else_=func.cast(1, Integer)
+                    )
+                ).label('Этап диагноза не заключительный'),
+            func.sum(
+                case(
+                    (and_(
+                        t_toxic_cases.c.is_cancelled == false(),
+                        t_toxic_cases.c.diadnoz_stage
+                        ), func.cast(1, Integer)),
+                    else_=func.cast(0, Integer)
                     )
                 ).label('Актуальные случаи')
          ]).group_by(
@@ -489,6 +504,7 @@ class ToxicCase (BaseModel):
             .select_from(j).where(and_(
                 t_toxic_cases.c.o_303.between(START, END),
                 t_toxic_cases.c.is_cancelled == false(),
+                t_toxic_cases.c.diadnoz_stage,
                 t_1123.c.rpn_key.like('40%')
             ))
         res = await database.fetch_all(query)

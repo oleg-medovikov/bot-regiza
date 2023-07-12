@@ -27,6 +27,9 @@ t_toxic_cases = Table(
     # диагноз МКБ dict_mkb
     Column('mkb_id', SmallInteger),
 
+    # является ли диагноз заключительным
+    Column('diadnoz_stage', Boolean),
+
     # дата установки диагноза
     Column('diagnoz_date', DateTime),
 

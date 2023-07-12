@@ -39,8 +39,7 @@ async def get_case_automatic():
 
     mess = f'Загружаю случаи с {START.strftime("%Y-%m-%d")}'
     mess += f' по {END.strftime("%Y-%m-%d")}'
-    mess += f'Размер датафрейма {len(df)}'
-    mess += '\n\n'
+    mess += f'\nРазмер датафрейма {len(df)}\n'
 
     count_add = 0
     count_cancel = 0

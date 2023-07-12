@@ -133,6 +133,7 @@ async def prepare_toxic_cases(DF: DataFrame) -> list:
         DICT['is_cancelled'] = row['case_is_cancelled']
         DICT['sex'] = True if row['gender'] == "male" else False
         DICT['mkb_id'] = await MKB.get_id(row['diagnosis'])
+        DICT['diadnoz_stage'] = True if row['stage'] == '3' else False
         DICT['diagnoz_date'] = row['date_aff_first']
         DICT['doc_smo'] = await Doctor.id(row['smo_fio'])
         DICT['doc_md'] = await Doctor.id(row['meddoc_fio'])

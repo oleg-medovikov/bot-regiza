@@ -62,6 +62,10 @@ async def process_simple_calendar(
             return await callback_query.message.answer(mess)
         FILENAME = f'/tmp/Случаи_за_{month_name(date.month)}_{date.year}.xlsx'
         SHETNAME = 'def'
+        if USER.role in ['rpn']:
+            df = df.loc[(df['Статус СМО'] == 'актуальный') & (df['Этап установления диагноза'] == 'Заключительный')]
+            del df['Этап установления диагноза']
+            del df['Статус СМО']
 
         write_styling_excel(FILENAME, df, SHETNAME)
         await callback_query.message.answer_document(open(FILENAME, 'rb'))
