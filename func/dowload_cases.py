@@ -54,6 +54,7 @@ def toxic_get_cases(START: str, END: str, ORGS: list) -> 'DataFrame':
         values=['observation_value'],
         aggfunc='first'
         ).stack(0)
+    obs.loc[obs['303'].isnull(), '303'] = obs.loc[obs['303'].isnull(), '1749']
 
     # уникальные строки по номеру истории болезни
     DF = df.copy()
