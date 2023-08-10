@@ -6,7 +6,7 @@ from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
 from sqlalchemy import Integer
-from sqlalchemy.sql.expression import false, cast
+from sqlalchemy.sql.expression import false, true, cast
 
 from pandas import DataFrame
 
@@ -179,7 +179,7 @@ class ToxicCase (BaseModel):
             (case(
                 (t_toxic_cases.c.is_cancelled, 'отменен'),
                 else_='актуальный',
-             )).label('Статус СМО'),
+            )).label('Статус СМО'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases.c.history_number).label('Номер истории болезни'),
             (t_2.c.value).label('Возраст'),
@@ -188,7 +188,7 @@ class ToxicCase (BaseModel):
             (case(
                 (t_toxic_cases.c.diadnoz_stage, 'Заключительный'),
                 else_='Другой',
-                )).label('Этап установления диагноза'),
+            )).label('Этап установления диагноза'),
             (t_doc_SMO.c.doc_fio).label('Врач СМО'),
             (t_doc_MD.c.doc_fio).label('Врач МД'),
             (t_toxic_cases.c.diagnoz_date).label('Дата отправки'),
@@ -219,7 +219,7 @@ class ToxicCase (BaseModel):
             (t_1119.c.value).label('Социальное положение (1119)'),
             (t_1123.c.value).label('Район (1123)'),
             (t_toxic_cases.c.errors).label('Ошибки заполнения'),
-            ]).order_by(desc(t_toxic_cases.c.o_303))\
+        ]).order_by(desc(t_toxic_cases.c.o_303))\
             .select_from(j).where(and_(
                 t_toxic_cases.c.o_303.between(START, END),
                 t_toxic_cases.c.org_id.in_(MO)
@@ -267,7 +267,7 @@ class ToxicCase (BaseModel):
             columns=['Диагноз'],
             values='id',
             aggfunc='count'
-            )
+        )
         df = df.fillna('')
 
         return df
@@ -321,7 +321,7 @@ class ToxicCase (BaseModel):
         ]).select_from(j).where(and_(
             t_toxic_cases.c.org_id.in_(ORG),
             t_toxic_cases.c.history_number == NUMBER
-            ))
+        ))
         res = await database.fetch_all(query)
         return [dict(r) for r in res]
 
@@ -350,25 +350,25 @@ class ToxicCase (BaseModel):
                 case(
                     (t_toxic_cases.c.is_cancelled, func.cast(1, Integer)),
                     else_=func.cast(0, Integer)
-                    )
-                ).label('Помечен как отмененный'),
+                )
+            ).label('Помечен как отмененный'),
             func.sum(
                 case(
                     (t_toxic_cases.c.is_cancelled, func.cast(0, Integer)),
                     (t_toxic_cases.c.diadnoz_stage, func.cast(0, Integer)),
                     else_=func.cast(1, Integer)
-                    )
-                ).label('Этап диагноза не заключительный'),
+                )
+            ).label('Этап диагноза не заключительный'),
             func.sum(
                 case(
                     (and_(
                         t_toxic_cases.c.is_cancelled == false(),
                         t_toxic_cases.c.diadnoz_stage
-                        ), func.cast(1, Integer)),
+                    ), func.cast(1, Integer)),
                     else_=func.cast(0, Integer)
-                    )
-                ).label('Актуальные случаи')
-         ]).group_by(
+                )
+            ).label('Актуальные случаи')
+        ]).group_by(
             t_1.c.nsi_key,
             t_1.c.value,
             t_dict_orgs.c.org_name
@@ -500,11 +500,11 @@ class ToxicCase (BaseModel):
             t_toxic_cases.c.o_1118,
             (t_1119.c.rpn_key).label('o_1119'),
             (t_1123.c.rpn_key).label('o_1123'),
-            ]).order_by(desc(t_toxic_cases.c.o_303))\
+        ]).order_by(desc(t_toxic_cases.c.o_303))\
             .select_from(j).where(and_(
                 t_toxic_cases.c.o_303.between(START, END),
                 t_toxic_cases.c.is_cancelled == false(),
-                t_toxic_cases.c.diadnoz_stage,
+                t_toxic_cases.c.diadnoz_stage == true(),
                 t_1123.c.rpn_key.like('40%')
             ))
         res = await database.fetch_all(query)

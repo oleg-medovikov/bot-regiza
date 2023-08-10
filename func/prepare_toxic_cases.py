@@ -87,7 +87,8 @@ async def check_distric(VALUE: str, DICT: dict) -> dict:
     try:
         DICT['o_1123'] = await DictObser.nsi_key_by_value(VALUE, 1123)
     except ValueError:
-        DICT['o_1123'] = 0
+        # попросили в случае неправильного района, передавать как СПб
+        DICT['o_1123'] = 4000
         DICT['errors'] = DICT.get('errors', '') \
             + f'неправильно передан район {VALUE}\n'
 

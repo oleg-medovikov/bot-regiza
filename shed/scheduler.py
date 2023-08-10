@@ -24,7 +24,7 @@ async def test_send():
 async def get_case_automatic():
     # берем список актуальных организаций
     ORGS = await Organization.get_org_list()
-    START = datetime.now() - timedelta(days=20)
+    START = datetime.now() - timedelta(days=25)
     END = datetime.now() + timedelta(days=1)
     USER = await User.get(MASTER)
 
