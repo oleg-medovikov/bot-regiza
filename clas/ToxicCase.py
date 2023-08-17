@@ -174,6 +174,14 @@ class ToxicCase (BaseModel):
         )
 
         query = select([
+            (case(
+                (and_(
+                    t_toxic_cases.c.is_cancelled == false(),
+                    t_toxic_cases.c.diadnoz_stage == true(),
+                    t_1123.c.rpn_key.like('40%')
+                ), 'Да'),
+                else_='Нет'
+                )).label('Попадает в выгрузку РПН'),
             (t_toxic_cases.c.o_303).label('Дата установления диагноза (303)'),
             (t_toxic_cases.c.case_biz_key).label('Идентификатор СМО'),
             (case(

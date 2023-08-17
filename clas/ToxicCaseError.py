@@ -2,9 +2,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from base import database, t_toxic_cases_errors, t_dict_doctor, \
     t_dict_mkb, t_dict_orgs
-from sqlalchemy import desc, select, case, and_
+from sqlalchemy import select
 from sqlalchemy.orm import aliased
-from sqlalchemy.sql import extract
 
 
 class ToxicCaseError (BaseModel):
