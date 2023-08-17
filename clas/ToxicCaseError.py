@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime
 from base import database, t_toxic_cases_errors, t_dict_doctor, \
-    t_dict_mkb, t_dict_orgs
-from sqlalchemy import select
+    t_dict_mkb, t_dict_orgs, t_toxic_cases
+from sqlalchemy import select, case
 from sqlalchemy.orm import aliased
 
 
@@ -45,6 +45,7 @@ class ToxicCaseError (BaseModel):
 
     @staticmethod
     async def get_all(ORG: list) -> dict:
+        t_cases = aliased(t_toxic_cases)
         t_doc_SMO = aliased(t_dict_doctor)
         t_doc_MD = aliased(t_dict_doctor)
 
@@ -60,9 +61,16 @@ class ToxicCaseError (BaseModel):
         ).join(
             t_doc_MD,
             t_toxic_cases_errors.c.doc_md == t_doc_MD.c.doc_id
+        ).join(
+            t_cases,
+            t_cases.c.case_biz_key == t_toxic_cases_errors.c.case_biz_key
         )
 
         query = select([
+            (case(
+                (t_cases.c.is_cancelled, 'отменен'),
+                else_='актуальный',
+            )).label('Статус СМО'),
             (t_toxic_cases_errors.c.case_biz_key).label('Идентификатор СМО'),
             (t_dict_orgs.c.org_name).label('Организация'),
             (t_toxic_cases_errors.c.history_number).label('Номер истории'),
