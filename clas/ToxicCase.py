@@ -246,15 +246,18 @@ class ToxicCase (BaseModel):
                 t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
                 t_1123.c.obs_code == 1123
             ),
+            isouter=True
         ).join(
             t_dict_mkb,
-            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id
+            t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id,
+            isouter=True
         ).join(
             t_1,
             and_(
                 (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
                 t_1.c.obs_code == 1
             ),
+            isouter=True
         )
 
         query = select([
@@ -294,6 +297,7 @@ class ToxicCase (BaseModel):
                 t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
                 t_1123.c.obs_code == 1123
             ),
+            isouter=True
         ).join(
             t_dict_mkb,
             t_toxic_cases.c.mkb_id == t_dict_mkb.c.mkb_id
@@ -303,15 +307,19 @@ class ToxicCase (BaseModel):
                 (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
                 t_1.c.obs_code == 1
             ),
+            isouter=True
         ).join(
             t_doc_SMO,
-            t_toxic_cases.c.doc_smo == t_doc_SMO.c.doc_id
+            t_toxic_cases.c.doc_smo == t_doc_SMO.c.doc_id,
+            isouter=True
         ).join(
             t_doc_MD,
-            t_toxic_cases.c.doc_md == t_doc_MD.c.doc_id
+            t_toxic_cases.c.doc_md == t_doc_MD.c.doc_id,
+            isouter=True
         ).join(
             t_dict_orgs,
-            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id,
+            isouter=True
         )
 
         query = select([
@@ -337,6 +345,7 @@ class ToxicCase (BaseModel):
     async def stat_cases_count():
         "Сводный отчет по количеству случаев по месяцам"
         t_1 = aliased(t_dict_obser)
+        t_1123 = aliased(t_dict_obser)
 
         j = t_toxic_cases.join(
             t_1,
@@ -344,9 +353,18 @@ class ToxicCase (BaseModel):
                 (extract('month', t_toxic_cases.c.o_303)) == t_1.c.nsi_key,
                 t_1.c.obs_code == 1
             ),
+            isouter=True
         ).join(
             t_dict_orgs,
-            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id
+            t_toxic_cases.c.org_id == t_dict_orgs.c.org_id,
+            isouter=True
+        ).join(
+            t_1123,
+            and_(
+                t_toxic_cases.c.o_1123 == t_1123.c.nsi_key,
+                t_1123.c.obs_code == 1123
+                ),
+            isouter=True
         )
 
         query = select([
@@ -375,7 +393,17 @@ class ToxicCase (BaseModel):
                     ), func.cast(1, Integer)),
                     else_=func.cast(0, Integer)
                 )
-            ).label('Актуальные случаи')
+            ).label('Актуальные случаи'),
+            func.sum(
+                case(
+                    (and_(
+                        t_toxic_cases.c.is_cancelled == false(),
+                        t_toxic_cases.c.diadnoz_stage == true(),
+                        t_1123.c.rpn_key.like('40%')
+                    ), func.cast(1, Integer)),
+                    else_=func.cast(0, Integer)
+                )
+                ).label('Попадает в выгрузку РПН'),
         ]).group_by(
             t_1.c.nsi_key,
             t_1.c.value,
