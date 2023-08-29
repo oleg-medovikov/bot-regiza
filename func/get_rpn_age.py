@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def get_rpn_age(birthdate: str, o_303: datetime) -> int:
-    "Равсчитываем коды возрастов по дате рождения"
+    "Рассчитываем коды возрастов по дате рождения"
     delta = (
         o_303 - datetime.strptime(birthdate, '%Y-%m-%d')
     ).days

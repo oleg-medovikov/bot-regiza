@@ -43,14 +43,6 @@ DICT_XLSX = {
 async def send_statistic_file(message: types.Message):
     await delete_message(message)
 
-    try:
-        await User.admin(message['from']['id'])
-    except ValueError:
-        await Log.add(message['from']['id'], 2)
-        return await message.answer(
-            "вы неизвестный пользователь",
-            parse_mode='html'
-            )
     COMMAND = message.text.replace('/', '')
 
     JSON = {
