@@ -10,6 +10,7 @@ from .statistic import statistic_panel, send_statistic_file
 from .search_history_number import ask_history_number, load_history_number
 from .file_errors import file_get_errors
 from .get_logs import get_logs
+from .process_adresses import process_adresses
 
 __all__ = [
     'bot',
@@ -32,4 +33,5 @@ __all__ = [
     'load_history_number',
     'file_get_errors',
     'get_logs',
+    'process_adresses',
 ]

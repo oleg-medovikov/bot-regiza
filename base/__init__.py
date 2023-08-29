@@ -7,6 +7,8 @@ from .toxic_cases import t_toxic_cases
 from .dict_obser import t_dict_obser
 from .toxic_case_error import t_toxic_cases_errors
 from .logi import t_logi
+from .adress import t_adress
+from .tokens import t_tokens
 
 metadata.create_all(engine)
 
@@ -22,4 +24,6 @@ __all__ = [
     't_dict_obser',
     't_toxic_cases_errors',
     't_logi',
+    't_adress',
+    't_tokens',
 ]

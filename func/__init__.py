@@ -11,6 +11,8 @@ from .return_month import return_month
 from .month_name import month_name
 from .create_xml import create_xml
 from .get_rpn_age import get_rpn_age
+from .geocoder import geocoder
+from .find_flat import find_flat
 
 __all__ = [
     'hello_message',
@@ -27,4 +29,6 @@ __all__ = [
     'month_name',
     'create_xml',
     'get_rpn_age',
+    'geocoder',
+    'find_flat',
 ]
