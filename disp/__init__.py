@@ -12,6 +12,7 @@ from .file_errors import file_get_errors
 from .get_logs import get_logs
 from .process_adresses import process_adresses
 from .process_flat import process_flat
+from .file_errors_adress import file_errors_adress
 
 __all__ = [
     'bot',
@@ -36,4 +37,5 @@ __all__ = [
     'get_logs',
     'process_adresses',
     'process_flat',
+    'file_errors_adress',
 ]
