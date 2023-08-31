@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from base import database, t_toxic_cases, t_dict_doctor, \
-    t_dict_mkb, t_dict_obser, t_dict_orgs
+
 from sqlalchemy import desc, select, case, and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import extract
@@ -9,6 +8,9 @@ from sqlalchemy import Integer
 from sqlalchemy.sql.expression import false, true, cast
 
 from pandas import DataFrame
+
+from base import database, t_toxic_cases, t_dict_doctor, \
+    t_dict_mkb, t_dict_obser, t_dict_orgs, t_adress
 
 
 class ToxicCase (BaseModel):
@@ -112,6 +114,10 @@ class ToxicCase (BaseModel):
                 t_1101.c.obs_code == 1101),
             isouter=True
         ).join(
+            t_adress,
+            t_toxic_cases.c.o_1102 == t_adress.c.line,
+            isouter=True
+        ).join(
             t_2,
             and_(
                 t_toxic_cases.c.age == cast(t_2.c.rpn_key, Integer),
@@ -202,6 +208,9 @@ class ToxicCase (BaseModel):
             (t_toxic_cases.c.diagnoz_date).label('Дата отправки'),
             (t_1101.c.value).label('Место происшествия (1101)'),
             (t_toxic_cases.c.o_1102).label('Адрес места происшествия (1102)'),
+            (t_adress.c.street).label('Улица, через геокодер'),
+            (t_adress.c.house).label('Дом, через геокодер'),
+            (t_adress.c.flat).label('Квартира, через функцию'),
             (t_toxic_cases.c.o_1103).label('Наименование мeста (1103)'),
             (t_toxic_cases.c.o_1104).label('Дата отравления (1104)'),
             (t_toxic_cases.c.o_1105).label('Дата первичного обращения (1105)'),
@@ -446,6 +455,10 @@ class ToxicCase (BaseModel):
                 t_1101.c.obs_code == 1101),
             isouter=True
         ).join(
+            t_adress,
+            t_toxic_cases.c.o_1102 == t_adress.c.line,
+            isouter=True
+        ).join(
             t_1106,
             and_(
                 t_toxic_cases.c.o_1106 == t_1106.c.nsi_key,
@@ -512,6 +525,9 @@ class ToxicCase (BaseModel):
             t_toxic_cases.c.diagnoz_date,  # лишнее?
             (t_1101.c.rpn_key).label('o_1101'),
             t_toxic_cases.c.o_1102,
+            t_adress.c.street,
+            t_adress.c.house,
+            t_adress.c.flat,
             t_toxic_cases.c.o_1103,
             t_toxic_cases.c.o_1104,
             t_toxic_cases.c.o_1105,
