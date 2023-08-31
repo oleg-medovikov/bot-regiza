@@ -44,3 +44,15 @@ class Adress(BaseModel):
 
         res = await database.fetch_all(query)
         return [_['o_1102'] for _ in res]
+
+    @staticmethod
+    async def get_all() -> list:
+        query = t_adress.select()
+        res = await database.fetch_all(query)
+        return [Adress(**_) for _ in res]
+
+    async def update(self) -> None:
+        query = t_adress.update().where(
+                t_adress.c.line == self.line
+                ).values(**self.dict())
+        await database.execute(query)

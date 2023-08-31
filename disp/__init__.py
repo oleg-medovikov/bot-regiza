@@ -11,6 +11,7 @@ from .search_history_number import ask_history_number, load_history_number
 from .file_errors import file_get_errors
 from .get_logs import get_logs
 from .process_adresses import process_adresses
+from .process_flat import process_flat
 
 __all__ = [
     'bot',
@@ -34,4 +35,5 @@ __all__ = [
     'file_get_errors',
     'get_logs',
     'process_adresses',
+    'process_flat',
 ]

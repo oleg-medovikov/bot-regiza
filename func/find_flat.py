@@ -1,6 +1,5 @@
 def find_flat(STRING: str) -> str:
-    for part in STRING.split(','):
-        for key in ['кв.', 'квартира']:
-            if key in part.lower():
-                return part
+    for key in ['кв.', 'кв ', 'квартира']:
+        if key in STRING.lower():
+            return STRING.lower().rsplit(key)[-1].replace(' ', '')
     return ''
