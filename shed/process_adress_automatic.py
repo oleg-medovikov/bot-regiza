@@ -18,7 +18,7 @@ async def process_adress_automatic():
         TOKEN = await Token.get()
     except ValueError:
         mess = 'Не осталось доступных токенов'
-        return await bot_send_text(mess, int(USER.u_id))
+        return bot_send_text(mess, int(USER.u_id))
 
     for ADR in LIST_ADRESS:
         try:
@@ -39,7 +39,7 @@ async def process_adress_automatic():
                     TOKEN = await Token.get()
                 except ValueError:
                     mess = 'Не осталось доступных токенов'
-                    return await bot_send_text(mess, int(USER.u_id))
+                    return bot_send_text(mess, int(USER.u_id))
             else:
                 TOKEN.count += 1
                 await TOKEN.update()
@@ -62,9 +62,4 @@ async def process_adress_automatic():
         await ADRESS.add()
 
     mess = 'Закончил проверять адреса геокодером'
-    return await bot_send_text(mess, int(USER.u_id))
-    
-
-
-
-
+    return bot_send_text(mess, int(USER.u_id))

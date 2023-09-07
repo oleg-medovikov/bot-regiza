@@ -36,7 +36,7 @@ async def load_history_number(message: types.Message, state: FSMContext):
         if USER.role in ['admin', 'rpn']:
             ORG = await Organization.get_org_id_list()
         else:
-            ORG = [].append(USER.org)
+            ORG = [USER.org]
 
         JSON = await ToxicCase.search_history_number(data['number'], ORG)
 
